@@ -1,6 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { handleWhatsAppWebhook } from "./routes/whatsapp";
 
 const app = express();
 app.use(express.json());
@@ -35,6 +36,9 @@ app.use((req, res, next) => {
 
   next();
 });
+
+// WhatsApp webhook endpoint
+app.post('/whatsapp/webhook', handleWhatsAppWebhook);
 
 (async () => {
   const server = await registerRoutes(app);
