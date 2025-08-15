@@ -1,27 +1,5 @@
 {
-  "functions": {
-    "server/index.ts": {
-      "maxDuration": 30
-    }
-  },
-  "rewrites": [
-    {
-      "source": "/whatsapp/webhook",
-      "destination": "/api/whatsapp"
-    },
-    {
-      "source": "/api/(.*)",
-      "destination": "/server/index.ts"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/client/dist/$1"
-    }
-  ],
-  "env": {
-    "TWILIO_ACCOUNT_SID": "@twilio-account-sid",
-    "TWILIO_AUTH_TOKEN": "@twilio-auth-token",
-    "OPENAI_API_KEY": "@openai-api-key",
-    "DATABASE_URL": "@database-url"
-  }
+  "buildCommand": "cd client && npm install && npm run build",
+  "outputDirectory": "client/dist",
+  "framework": "vite"
 }
