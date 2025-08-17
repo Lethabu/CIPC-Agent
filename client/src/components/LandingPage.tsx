@@ -55,7 +55,8 @@ const LandingPage: React.FC = () => {
   };
 
   const openWhatsApp = (message: string) => {
-    window.open(`https://wa.me/27876543210?text=${encodeURIComponent(message)}`, '_blank');
+    const phoneNumber = '27876543210'; // AI Sensy WhatsApp number
+    window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, '_blank');
   };
 
   const price = calculatePrice();

@@ -12,11 +12,13 @@ export interface WhatsAppResponse {
 
 export class WhatsAppService {
   private apiUrl: string;
-  private accessToken: string;
+  private apiKey: string;
+  private phoneNumber: string;
 
   constructor() {
-    this.apiUrl = process.env.WHATSAPP_API_URL || 'https://graph.facebook.com/v17.0';
-    this.accessToken = process.env.WHATSAPP_ACCESS_TOKEN || process.env.WHATSAPP_TOKEN || '';
+    this.apiUrl = process.env.AI_SENSY_API_URL || 'https://api.aisensy.com/v1';
+    this.apiKey = process.env.AI_SENSY_API_KEY || '';
+    this.phoneNumber = process.env.AI_SENSY_WHATSAPP_NUMBER || '+27876543210';
   }
 
   async sendMessage(message: WhatsAppMessage): Promise<WhatsAppResponse> {
@@ -29,16 +31,16 @@ export class WhatsAppService {
         };
       }
 
-      const response = await fetch(`${this.apiUrl}/messages`, {
+      const response = await fetch(`${this.apiUrl}/send-message`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${this.accessToken}`,
+          'X-API-Key': this.apiKey,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          messaging_product: "whatsapp",
-          to: message.to,
-          text: { body: message.message }
+          phone: message.to,
+          message: message.message,
+          type: 'text'
         })
       });
 
