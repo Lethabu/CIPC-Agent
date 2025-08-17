@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  cipc-agent:
+    build: .
+    ports:
+      - "3000:80"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+    
+  # Optional: Add server service when ready
+  # cipc-server:
+  #   build: ./server
+  #   ports:
+  #     - "3001:3001"
+  #   environment:
+  #     - NODE_ENV=production
+  #   restart: unless-stopped
