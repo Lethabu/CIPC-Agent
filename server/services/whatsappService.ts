@@ -17,20 +17,12 @@ export class WhatsAppService {
 
   constructor() {
     this.apiUrl = process.env.AI_SENSY_API_URL || 'https://api.aisensy.com/v1';
-    this.apiKey = process.env.AI_SENSY_API_KEY || '';
+    this.apiKey = process.env.AISENSY_WABA_API_KEY || '';
     this.phoneNumber = process.env.AI_SENSY_WHATSAPP_NUMBER || '+27876543210';
   }
 
-  async sendMessage(message: WhatsAppMessage): Promise<WhatsAppResponse> {
+    async sendMessage(message: WhatsAppMessage): Promise<WhatsAppResponse> {
     try {
-      // For development, simulate successful message sending
-      if (process.env.NODE_ENV === 'development') {
-        return {
-          success: true,
-          messageId: `msg_${Date.now()}`
-        };
-      }
-
       const response = await fetch(`${this.apiUrl}/send-message`, {
         method: 'POST',
         headers: {

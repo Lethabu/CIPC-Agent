@@ -1,35 +1,36 @@
 import { Request, Response } from 'express'
 import { WhatsAppWebhookService } from '../services/whatsappWebhook'
+import { whatsappService } from '../services/whatsappService'
 
 export async function handleWhatsAppWebhook(req: Request, res: Response) {
   if (req.method === 'POST') {
-    const { Body, From, MediaUrl0 } = req.body
+    const incomingMessage = req.body; // Assuming AiSensy sends JSON body
     
     try {
-      const response = await WhatsAppWebhookService.processCIPCRequest({
-        messageType: WhatsAppWebhookService.detectMessageType(Body, MediaUrl0),
-        userId: From,
-        content: Body,
-        mediaUrl: MediaUrl0
+      // AiSensy webhook structure might be different, adjust as needed
+      const messageType = WhatsAppWebhookService.detectMessageType(incomingMessage.text?.body, incomingMessage.media?.[0]?.url);
+      const userId = incomingMessage.from;
+      const content = incomingMessage.text?.body;
+      const mediaUrl = incomingMessage.media?.[0]?.url;
+
+      const responseMessage = await WhatsAppWebhookService.processCIPCRequest({
+        messageType,
+        userId,
+        content,
+        mediaUrl
       })
       
-      // Return TwiML response
-      const twiml = `<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-  <Message>${response}</Message>
-</Response>`
-      
-      res.set('Content-Type', 'text/xml')
-      res.send(twiml)
+      await whatsappService.sendMessage({
+        to: userId,
+        message: responseMessage,
+        type: 'text'
+      });
+
+      res.status(200).json({ status: 'success' });
       
     } catch (error) {
       console.error('WhatsApp webhook error:', error)
-      const errorTwiml = `<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-  <Message>Sorry, I encountered an error. Please try again or contact support.</Message>
-</Response>`
-      res.set('Content-Type', 'text/xml')
-      res.send(errorTwiml)
+      res.status(500).json({ status: 'error', message: 'Internal server error' });
     }
   } else {
     res.status(405).json({ message: 'Method not allowed' })
