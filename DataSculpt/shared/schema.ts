@@ -12,6 +12,10 @@ export const users = pgTable("users", {
   phoneNumber: varchar("phone_number"),
   companyName: varchar("company_name"),
   registrationNumber: varchar("registration_number"),
+  // Add POPIA compliance fields
+  consentRequired: boolean("consent_required").default(false),
+  consentGiven: boolean("consent_given"),
+  consentDate: timestamp("consent_date"),
   subscriptionPlan: varchar("subscription_plan").default("free"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
