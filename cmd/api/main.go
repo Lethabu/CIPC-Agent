@@ -6,12 +6,13 @@ import (
 	"log"
 	"os"
 
-	"github.com/gin-gonic/gin"
-	"go.temporal.io/sdk/client"
 	_ "github.com/cockroachdb/cockroach-go/v2/crdb/crdbpgxv5"
+	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"go.temporal.io/sdk/client"
 
-	"CIPC-Agent/repo" // Assuming CIPC-Agent is the module name
+	"CIPC-Agent/repo"          // Assuming CIPC-Agent is the module name
+	"CIPC-Agent/server/routes" // Import the new routes package
 )
 
 func main() {
@@ -45,14 +46,10 @@ func main() {
 	cipcRepo := repo.Repo{Db: dbpool}
 
 	r := gin.Default()
-	r.POST("/whatsapp", func(c *gin.Context) { handleWhatsApp(c, temporalClient, &cipcRepo) })
+	// Use the new WhatsAppHandler from the routes package
+	r.POST("/whatsapp", routes.WhatsAppHandler)
 	r.GET("/healthz", func(c *gin.Context) { healthCheck(c, temporalClient, dbpool) })
 	r.Run(":8080")
-}
-
-func handleWhatsApp(c *gin.Context, temporalClient client.Client, cipcRepo *repo.Repo) {
-	// This will be implemented later
-	c.JSON(200, gin.H{"message": "WhatsApp handler not yet implemented"})
 }
 
 func healthCheck(c *gin.Context, temporalClient client.Client, dbpool *pgxpool.Pool) {
