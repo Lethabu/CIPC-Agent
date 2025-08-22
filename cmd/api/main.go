@@ -13,7 +13,7 @@ import (
 
 	"CIPC-Agent/repo"
 	"CIPC-Agent/server/routes"
-	"CIPC-Agent/server/routes/payments" // Import the payments routes package
+	"CIPC-Agent/server/routes/payments"
 )
 
 func main() {
@@ -47,6 +47,7 @@ func main() {
 	cipcRepo := repo.Repo{Db: dbpool}
 
 	r := gin.Default()
+	routes.SetRepo(&cipcRepo) // Inject the repository into the routes package
 	r.POST("/whatsapp", routes.WhatsAppHandler)
 	r.POST("/payments", payments.HandlePaymentRequest) // Add the new payments route
 	r.GET("/healthz", func(c *gin.Context) { healthCheck(c, temporalClient, dbpool) })
