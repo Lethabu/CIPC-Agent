@@ -3,6 +3,7 @@ import { GoogleGenAI } from "@google/genai";
 import { CipcCommander } from "./agents/cipcCommander";
 import { leadScoutAgent } from "./agents/leadScout";
 import { kycOnboarderAgent } from "./agents/kycOnboarder";
+import { complianceCopilotAgent } from "./agents/complianceCopilot"; // Import the new agent
 import { formAutopilotAgent } from "./agents/formAutopilot";
 import { regulationSentinelAgent } from "./agents/regulationSentinel";
 import { paymentRunnerAgent } from "./agents/paymentRunner";
@@ -59,6 +60,9 @@ export class AIOrchestrator {
         case 'check_beneficial_ownership_compliance':
           return await regulationSentinelAgent.checkBeneficialOwnershipCompliance(payload.companyId);
         
+        case 'validate_submission_data': // New case for Compliance Copilot
+          return await complianceCopilotAgent.validateData(payload.submissionData);
+
         case 'get_beneficial_ownership_cost':
           return await paymentRunnerAgent.getBeneficialOwnershipFilingCost();
         
@@ -76,6 +80,7 @@ export class AIOrchestrator {
       cipc_commander: true,
       lead_scout: true,
       kyc_onboarder: true,
+      compliance_copilot: true, // Add the new agent to status
       form_autopilot: true,
       regulation_sentinel: true,
       payment_runner: true

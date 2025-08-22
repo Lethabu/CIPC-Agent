@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { GoogleGenAI } from "@google/genai";
 import type { AgentTask, AgentResponse } from "../aiOrchestrator";
+import { complianceCopilotAgent } from "./complianceCopilot"; // Import the new agent
 
 export class CipcCommander {
   constructor(private openai: OpenAI, private gemini: GoogleGenAI) {}
@@ -11,10 +12,11 @@ export class CipcCommander {
     <TASK>Delegate tasks based on user intent: 
     1. New lead generation → Route to lead_scout
     2. Document upload/processing → Route to kyc_onboarder
-    3. Form generation/filing → Route to form_autopilot
-    4. Compliance deadline/alert → Route to regulation_sentinel
-    5. Payment/submission → Route to payment_runner
-    6. General queries → Handle directly</TASK>
+    3. Data validation → Route to compliance_copilot
+    4. Form generation/filing → Route to form_autopilot
+    5. Compliance deadline/alert → Route to regulation_sentinel
+    6. Payment/submission → Route to payment_runner
+    7. General queries → Handle directly</TASK>
     <INPUT>User Intent: ${userIntent}</INPUT>
     <OUTPUT>JSON with {agent_name: string, task: string, priority: "high"|"medium"|"low", data?: any}</OUTPUT>
     <CONSTRAINTS>Never process documents without POPIA compliance checks. Always prioritize user data security.</CONSTRAINTS>

@@ -42,6 +42,20 @@ export class KYCOnboarderAgent {
     };
   }
 
+  async extractIDDocumentData(idDocument: any) {
+    // This is a mock implementation. In a real system, this would involve
+    // OCR and AI parsing to extract data from an uploaded ID document.
+    console.log("Simulating ID document data extraction:", idDocument);
+    return {
+      fullName: "John Doe",
+      idNumber: "9001015000087",
+      dateOfBirth: "1990-01-01",
+      gender: "Male",
+      nationality: "South African",
+      extractedAt: new Date().toISOString(),
+    };
+  }
+
   async getStatus() {
     return {
       agent: this.name,
