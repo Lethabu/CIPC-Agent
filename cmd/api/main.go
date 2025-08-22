@@ -11,8 +11,9 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"go.temporal.io/sdk/client"
 
-	"CIPC-Agent/repo"          // Assuming CIPC-Agent is the module name
-	"CIPC-Agent/server/routes" // Import the new routes package
+	"CIPC-Agent/repo"
+	"CIPC-Agent/server/routes"
+	"CIPC-Agent/server/routes/payments" // Import the payments routes package
 )
 
 func main() {
@@ -46,8 +47,8 @@ func main() {
 	cipcRepo := repo.Repo{Db: dbpool}
 
 	r := gin.Default()
-	// Use the new WhatsAppHandler from the routes package
 	r.POST("/whatsapp", routes.WhatsAppHandler)
+	r.POST("/payments", payments.HandlePaymentRequest) // Add the new payments route
 	r.GET("/healthz", func(c *gin.Context) { healthCheck(c, temporalClient, dbpool) })
 	r.Run(":8080")
 }
