@@ -42,18 +42,69 @@ export class FormAutopilotAgent {
   }
 
   async generateForm(formType: string, companyData: any) {
-    if (formType === "beneficial_ownership" || formType === "COR46") {
-      return this.generateBeneficialOwnershipForm(companyData);
+    switch (formType) {
+      case "beneficial_ownership":
+      case "COR46":
+        return this.generateBeneficialOwnershipForm(companyData);
+      case "annual_return":
+        // Placeholder for Annual Return form generation
+        return {
+          status: "generated",
+          formType: "Annual Return",
+          formData: { companyData, filingYear: new Date().getFullYear() - 1 },
+          validationChecks: { allFieldsComplete: true },
+          estimatedFilingCost: 199,
+          nextSteps: ["Review and approve", "Submit to CIPC"]
+        };
+      case "company_registration_update":
+        // Placeholder for Company Registration Update form generation
+        return {
+          status: "generated",
+          formType: "Company Registration Update",
+          formData: { companyData, updateDetails: "Mock update details" },
+          validationChecks: { allFieldsComplete: true },
+          estimatedFilingCost: 299,
+          nextSteps: ["Review and approve", "Submit to CIPC"]
+        };
+      case "director_amendment":
+        // Placeholder for Director Amendment form generation
+        return {
+          status: "generated",
+          formType: "Director Amendment",
+          formData: { companyData, directorChanges: "Mock director changes" },
+          validationChecks: { allFieldsComplete: true },
+          estimatedFilingCost: 149,
+          nextSteps: ["Review and approve", "Submit to CIPC"]
+        };
+      case "share_allotment_notification":
+        // Placeholder for Share Allotment Notification form generation
+        return {
+          status: "generated",
+          formType: "Share Allotment Notification",
+          formData: { companyData, allotmentDetails: "Mock allotment details" },
+          validationChecks: { allFieldsComplete: true },
+          estimatedFilingCost: 199, // Assuming similar to B-BBEE
+          nextSteps: ["Review and approve", "Submit to CIPC"]
+        };
+      case "annual_financial_statement_submission":
+        // Placeholder for Annual Financial Statement Submission form generation
+        return {
+          status: "generated",
+          formType: "Annual Financial Statement Submission",
+          formData: { companyData, financialStatements: "Mock AFS data" },
+          validationChecks: { allFieldsComplete: true },
+          estimatedFilingCost: 249,
+          nextSteps: ["Review and approve", "Submit to CIPC"]
+        };
+      default:
+        return {
+          status: "generated",
+          formType,
+          formData: {},
+          validationChecks: {},
+          estimatedFilingCost: 100
+        };
     }
-
-    // Other form types
-    return {
-      status: "generated",
-      formType,
-      formData: {},
-      validationChecks: {},
-      estimatedFilingCost: 100
-    };
   }
 
   async submitForm(formData: any) {

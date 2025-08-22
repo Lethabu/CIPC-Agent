@@ -32,6 +32,13 @@ export class RegulationSentinelAgent {
     };
   }
 
+  async calculateUrgencyFee(daysUntilDue: number): Promise<number> {
+    if (daysUntilDue < 7) {
+      return 0.50; // 50% urgency fee
+    }
+    return 0; // No urgency fee
+  }
+
   async monitorRegulationChanges() {
     return {
       status: "monitoring",
@@ -47,20 +54,28 @@ export class RegulationSentinelAgent {
     };
   }
 
-  async getComplianceCalendar(companyId: string) {
+  async getComplianceCalendar(companyRegistrationNumber: string) {
+    // Mock CIPC API lookup to fetch incorporation date
+    console.log("Simulating CIPC API lookup for:", companyRegistrationNumber);
+    const incorporationDate = new Date("2022-01-15"); // Example incorporation date
+
+    // Calculate future deadlines based on incorporation date
+    const annualReturnDueDate = new Date(incorporationDate.getFullYear() + 1, incorporationDate.getMonth(), incorporationDate.getDate());
+    const beneficialOwnershipDueDate = new Date(incorporationDate.getFullYear(), incorporationDate.getMonth() + 6, incorporationDate.getDate()); // Example: 6 months after incorporation
+
     return {
-      companyId,
+      companyRegistrationNumber,
       upcomingDeadlines: [
-        {
-          type: "beneficial_ownership",
-          formType: "COR46",
-          dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-          status: "pending"
-        },
         {
           type: "annual_return",
           formType: "AR",
-          dueDate: new Date(Date.now() + 120 * 24 * 60 * 60 * 1000),
+          dueDate: annualReturnDueDate,
+          status: "pending"
+        },
+        {
+          type: "beneficial_ownership",
+          formType: "COR46",
+          dueDate: beneficialOwnershipDueDate,
           status: "pending"
         }
       ]

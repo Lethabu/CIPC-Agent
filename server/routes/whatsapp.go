@@ -1,14 +1,24 @@
 package routes
 
 import (
-	"log" // Added for logging in dummy aisensy
+	"context" // Import context for database operations
+	"log"     // Added for logging in dummy aisensy
 	"net/http"
 	"strings" // Import the strings package
 
 	"github.com/gin-gonic/gin"
 
+	"CIPC-Agent/repo"                   // Import the repo package
 	"CIPC-Agent/server/routes/payments" // Import the payments package
 )
+
+// Global variable to hold the repository instance
+var cipcRepo *repo.Repo
+
+// SetRepo is a function to inject the repository dependency
+func SetRepo(r *repo.Repo) {
+	cipcRepo = r
+}
 
 // Dummy aisensy package for compilation
 var aisensy struct {
@@ -39,17 +49,30 @@ func WhatsAppHandler(c *gin.Context) {
 
 	// Check for approval of PAYG filing
 	if strings.Contains(normalizedBody, "yes") || strings.Contains(normalizedBody, "approve") {
-		// This is a simplified example. In a real system, you'd need to store
-		// the pending filing details (service type, amount) associated with the user's session.
-		// For now, we'll hardcode an example.
 		serviceType := "Annual Return Filing"
 		amount := 199.00
-		phoneNumber := msg.From // Use the sender's number as the phone number for PayFast
+		phoneNumber := msg.From
+
+		// Increment PAYG filing count
+		if cipcRepo != nil {
+			err := cipcRepo.IncrementUserPaygFilingCount(context.Background(), phoneNumber)
+			if err != nil {
+				log.Printf("Error incrementing PAYG count for %s: %v\n", phoneNumber, err)
+			} else {
+				log.Printf("PAYG count incremented for %s\n", phoneNumber)
+				// Check if it's their second filing to offer upgrade
+				count, err := cipcRepo.GetUserPaygFilingCount(context.Background(), phoneNumber)
+				if err != nil {
+					log.Printf("Error getting PAYG count for %s: %v\n", phoneNumber, err)
+				} else if count == 2 {
+					aisensy.SendText(phoneNumber, "Congratulations on your second successful filing! Did you know you could save money with our Growth subscription (R899/mo) for unlimited filings? Reply 'upgrade' to learn more!")
+				}
+			}
+		}
 
 		payFastLink := payments.CreatePayFastLink(serviceType, amount, phoneNumber)
 		aisensy.SendText(msg.From, "Great! Please use this link to complete your payment for the "+serviceType+" (R"+payments.Ftoa(amount)+"): "+payFastLink)
-	} else if len(msg.Body) > 5 && len(msg.Body) < 15 { // Assuming a company registration number is between 6 and 14 characters
-		// Placeholder for CIPC lookup and compliance score logic
+	} else if len(msg.Body) > 5 && len(msg.Body) < 15 {
 		companyRegNo := msg.Body
 		log.Printf("Attempting to get compliance score for company: %s\n", companyRegNo)
 
