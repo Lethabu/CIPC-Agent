@@ -9,14 +9,21 @@ import (
 	_ "github.com/cockroachdb/cockroach-go/v2/crdb/crdbpgxv5"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/joho/godotenv" // Import godotenv
 	"go.temporal.io/sdk/client"
 
 	"CIPC-Agent/repo"
-	"CIPC-Agent/server/routes"
-	"CIPC-Agent/server/routes/payments"
+	whatsapp_routes "CIPC-Agent/server/routes"
+	payments_routes "CIPC-Agent/server/routes/payments"
 )
 
 func main() {
+	// Load environment variables from .env.local
+	err := godotenv.Load(".env.local")
+	if err != nil {
+		log.Printf("Error loading .env.local file, using system environment variables: %v", err)
+	}
+
 	// Initialize CockroachDB connection
 	dbURL := os.Getenv("DATABASE_URL")
 	if dbURL == "" {
@@ -47,9 +54,9 @@ func main() {
 	cipcRepo := repo.Repo{Db: dbpool}
 
 	r := gin.Default()
-	routes.SetRepo(&cipcRepo) // Inject the repository into the routes package
-	r.POST("/whatsapp", routes.WhatsAppHandler)
-	r.POST("/payments", payments.HandlePaymentRequest) // Add the new payments route
+	whatsapp_routes.SetRepo(&cipcRepo) // Inject the repository into the whatsapp_routes package
+	r.POST("/whatsapp", whatsapp_routes.WhatsAppHandler)
+	r.POST("/payments", payments_routes.HandlePaymentRequest) // Add the new payments route
 	r.GET("/healthz", func(c *gin.Context) { healthCheck(c, temporalClient, dbpool) })
 	r.Run(":8080")
 }

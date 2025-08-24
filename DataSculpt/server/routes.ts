@@ -302,6 +302,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post('/api/whatsapp/send', async (req, res) => {
+    try {
+      const { to, message } = req.body;
+      if (!to || !message) {
+        return res.status(400).json({ error: 'Both "to" and "message" are required.' });
+      }
+
+      const response = await whatsappService.sendMessage({ to, message, type: 'text' });
+
+      if (response.success) {
+        res.status(200).json({ success: true, messageId: response.messageId });
+      } else {
+        res.status(500).json({ success: false, error: response.error });
+      }
+    } catch (error) {
+      console.error('Error sending WhatsApp message via internal API:', error);
+      res.status(500).json({ success: false, error: error instanceof Error ? error.message : 'Internal server error' });
+    }
+  });
   const httpServer = createServer(app);
   return httpServer;
 }
