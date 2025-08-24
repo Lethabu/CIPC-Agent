@@ -13,10 +13,13 @@ export interface WhatsAppResponse {
 export class WhatsAppService {
   private apiUrl: string;
   private accessToken: string;
+  private fromNumber: string;
 
   constructor() {
     this.apiUrl = process.env.AI_SENSY_WEBHOOK_URL || 'https://wa.aisensy.com'; // Default to Ai Sensy base URL
     this.accessToken = process.env.AI_SENSY_API_KEY || '';
+    this.fromNumber = process.env.AI_SENSY_WHATSAPP_NUMBER || '';
+    this.fromNumber = process.env.AI_SENSY_WHATSAPP_NUMBER || '';
   }
 
   async sendMessage(message: WhatsAppMessage): Promise<WhatsAppResponse> {
