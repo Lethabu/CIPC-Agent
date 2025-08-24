@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       cockroach:
-        image: cockroachdb/cockroach:v23.2
+        image: cockroachdb/cockroach:v25.3.0
         ports: ["26257:26257"]
         env:
           COCKROACH_USER: root
