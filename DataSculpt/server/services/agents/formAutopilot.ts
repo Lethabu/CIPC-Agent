@@ -1,4 +1,12 @@
 // Form Autopilot Agent - Handles automated CIPC form completion and submission
+export interface CipcSubmissionResult {
+  status: string;
+  cipcReference: string;
+  submissionTime: string;
+  processingTimeEstimate: string;
+  trackingUrl: string;
+}
+
 export class FormAutopilotAgent {
   name = "Form Autopilot";
   description = "AI agent specialized in automated CIPC form completion, including COR46 Beneficial Ownership forms";
@@ -56,7 +64,7 @@ export class FormAutopilotAgent {
     };
   }
 
-  async submitForm(formData: any) {
+  async submitForm(formData: any): Promise<CipcSubmissionResult> {
     // Mock CIPC submission
     return {
       status: "submitted",

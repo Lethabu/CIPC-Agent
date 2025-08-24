@@ -15,8 +15,8 @@ export class WhatsAppService {
   private accessToken: string;
 
   constructor() {
-    this.apiUrl = process.env.WHATSAPP_API_URL || 'https://graph.facebook.com/v17.0';
-    this.accessToken = process.env.WHATSAPP_ACCESS_TOKEN || process.env.WHATSAPP_TOKEN || '';
+    this.apiUrl = process.env.AI_SENSY_WEBHOOK_URL || 'https://wa.aisensy.com'; // Default to Ai Sensy base URL
+    this.accessToken = process.env.AI_SENSY_API_KEY || '';
   }
 
   async sendMessage(message: WhatsAppMessage): Promise<WhatsAppResponse> {
@@ -29,15 +29,15 @@ export class WhatsAppService {
         };
       }
 
-      const response = await fetch(`${this.apiUrl}/messages`, {
+      const response = await fetch(`${this.apiUrl}/api/v2/send-message`, { // Assuming Ai Sensy endpoint
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${this.accessToken}`,
+          'api-key': this.accessToken, // Ai Sensy uses 'api-key' header
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          messaging_product: "whatsapp",
           to: message.to,
+          type: message.type,
           text: { body: message.message }
         })
       });

@@ -1,3 +1,4 @@
+/// &lt;reference path="./types/express.d.ts" /&gt;
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
@@ -140,7 +141,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // WhatsApp webhook endpoints
   app.get('/api/whatsapp/webhook', (req, res) => {
-    const verifyToken = process.env.WHATSAPP_VERIFY_TOKEN || 'cipc_ai_commander';
+    const verifyToken = process.env.AI_SENSY_API_KEY;
+    if (!verifyToken) {
+      console.error('AI_SENSY_API_KEY is not set.');
+      return res.sendStatus(403);
+    }
     const mode = req.query['hub.mode'];
     const token = req.query['hub.verify_token'];
     const challenge = req.query['hub.challenge'];
