@@ -7,6 +7,7 @@ require (
 	github.com/gin-gonic/gin v1.10.1
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.7.5
+	github.com/joho/godotenv v1.5.1
 	go.temporal.io/sdk v1.35.0
 )
 
@@ -57,4 +58,10 @@ require (
 	google.golang.org/grpc v1.66.0 // indirect
 	google.golang.org/protobuf v1.36.5 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
+)
+
+replace (
+	CIPC-Agent/repo => ./repo
+	CIPC-Agent/server/routes => ./server/routes
+	CIPC-Agent/server/routes/payments => ./server/routes/payments
 )

@@ -10,9 +10,11 @@ export const users = pgTable("users", {
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
   phoneNumber: varchar("phone_number"),
+  whatsappNumber: varchar("whatsapp_number").unique(), // Added for WhatsApp integration
   companyName: varchar("company_name"),
   registrationNumber: varchar("registration_number"),
   subscriptionPlan: varchar("subscription_plan").default("free"),
+  paygFilingCount: integer("payg_filing_count").default(0).notNull(), // Added for PAYG tracking
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
