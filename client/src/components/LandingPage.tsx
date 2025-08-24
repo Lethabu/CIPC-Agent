@@ -55,7 +55,7 @@ const LandingPage: React.FC = () => {
   };
 
   const openWhatsApp = (message: string) => {
-    const phoneNumber = process.env.REACT_APP_WHATSAPP_NUMBER || '27876543210'; // AI Sensy WhatsApp number
+    const phoneNumber = process.env.REACT_APP_AI_SENSY_WHATSAPP_NUMBER || '+27699171527'; // AI Sensy WhatsApp number
     window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, '_blank');
   };
 
@@ -214,10 +214,11 @@ const LandingPage: React.FC = () => {
           <h2 className="section-title">Transparent Pricing</h2>
           <div className="pricing-calculator">
             <h3 style={{textAlign: 'center', marginBottom: '2rem'}}>Calculate Your Filing Cost</h3>
-            <select 
-              className="calculator-input" 
+            <select
+              className="calculator-input"
               value={serviceType}
               onChange={(e) => setServiceType(e.target.value)}
+              aria-label="Select Service Type"
             >
               <option value="">Select Service</option>
               <option value="annual">Annual Return</option>
@@ -268,7 +269,7 @@ const LandingPage: React.FC = () => {
             <div className="footer-section">
               <h3>CIPC Agent</h3>
               <p>South Africa's leading AI-powered CIPC compliance platform. Trusted by 15,000+ businesses.</p>
-              <p><strong>📱 WhatsApp:</strong> <a href="https://wa.me/27876543210">087 654 3210</a></p>
+              <p><strong>📱 WhatsApp:</strong> <a href="https://wa.me/+27699171527">+27 69 917 1527</a></p>
               <p><strong>📧 Email:</strong> <a href="mailto:hello@cipcagent.co.za">hello@cipcagent.co.za</a></p>
             </div>
             <div className="footer-section">
