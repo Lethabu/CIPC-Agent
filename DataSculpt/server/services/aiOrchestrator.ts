@@ -3,7 +3,7 @@ import { GoogleGenAI } from "@google/genai";
 import { CipcCommander } from "./agents/cipcCommander";
 import { leadScoutAgent } from "./agents/leadScout";
 import { kycOnboarderAgent } from "./agents/kycOnboarder";
-import { formAutopilotAgent } from "./agents/formAutopilot";
+import { formAutopilotAgent, CipcSubmissionResult } from "./agents/formAutopilot";
 import { regulationSentinelAgent } from "./agents/regulationSentinel";
 import { paymentRunnerAgent } from "./agents/paymentRunner";
 
@@ -54,7 +54,7 @@ export class AIOrchestrator {
           return await formAutopilotAgent.generateBeneficialOwnershipForm(payload);
         
         case 'submit_cipc_form':
-          return await formAutopilotAgent.submitForm(payload);
+          return (await formAutopilotAgent.submitForm(payload)) as CipcSubmissionResult;
         
         case 'check_beneficial_ownership_compliance':
           return await regulationSentinelAgent.checkBeneficialOwnershipCompliance(payload.companyId);
