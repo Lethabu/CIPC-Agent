@@ -33,6 +33,7 @@
 /* Header */
 .header {
   background: rgba(255, 255, 255, 0.95);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   position: fixed;
@@ -475,4 +476,54 @@
     margin: 1rem;
     max-width: calc(100% - 2rem);
   }
+}
+.whatsapp-demo-subtitle {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+.whatsapp-cta-button-override {
+  background: white;
+  color: #25d366;
+  font-size: 1.2rem;
+  padding: 1rem 2rem;
+}
+
+.calculator-title {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.free-service-message {
+  text-align: center;
+  color: var(--success);
+  font-weight: bold;
+}
+
+.price-item-display {
+  display: flex;
+  justify-content: space-between;
+}
+
+.price-total-display {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  border-top: 1px solid #ccc;
+  padding-top: 10px;
+  margin-top: 10px;
+}
+
+.footer-security-info {
+  margin-top: 1rem;
+}
+
+.exit-intent-offer-title {
+  color: #fbbf24;
+}
+
+.exit-intent-disclaimer {
+  font-size: 0.9rem;
+  margin-top: 1rem;
+  opacity: 0.8;
 }

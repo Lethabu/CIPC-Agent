@@ -170,7 +170,7 @@ const LandingPage: React.FC = () => {
       <section className="whatsapp-demo" id="how-it-works">
         <div className="container">
           <h2 className="section-title">File Your Returns via WhatsApp in 2 Minutes</h2>
-          <p style={{fontSize: '1.2rem', marginBottom: '2rem'}}>
+          <p className="whatsapp-demo-subtitle">
             No apps to download, no complex forms. Just WhatsApp us your documents.
           </p>
           
@@ -198,9 +198,8 @@ const LandingPage: React.FC = () => {
             </div>
           </div>
           
-          <button 
-            className="cta-button"
-            style={{background: 'white', color: '#25d366', fontSize: '1.2rem', padding: '1rem 2rem'}}
+          <button
+            className="cta-button whatsapp-cta-button-override"
             onClick={() => openWhatsApp("Hi, I need help with my CIPC compliance")}
           >
             📱 Start on WhatsApp Now
@@ -213,7 +212,7 @@ const LandingPage: React.FC = () => {
         <div className="container">
           <h2 className="section-title">Transparent Pricing</h2>
           <div className="pricing-calculator">
-            <h3 style={{textAlign: 'center', marginBottom: '2rem'}}>Calculate Your Filing Cost</h3>
+            <h3 className="calculator-title">Calculate Your Filing Cost</h3>
             <select
               className="calculator-input"
               value={serviceType}
@@ -236,21 +235,21 @@ const LandingPage: React.FC = () => {
             {serviceType && (
               <div className="price-breakdown">
                 {serviceType === 'recovery' ? (
-                  <div style={{textAlign: 'center', color: 'var(--success)', fontWeight: 'bold'}}>
+                  <div className="free-service-message">
                     💚 FREE SERVICE<br/>
                     <small>We only succeed when you get your money back!</small>
                   </div>
                 ) : (
                   <>
-                    <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                    <div className="price-item-display">
                       <span>Base fee:</span>
                       <span>R{price.baseFee}</span>
                     </div>
-                    <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                    <div className="price-item-display">
                       <span>Document processing:</span>
                       <span>R{price.docFee}</span>
                     </div>
-                    <div style={{display: 'flex', justifyContent: 'space-between', fontWeight: 'bold', borderTop: '1px solid #ccc', paddingTop: '10px', marginTop: '10px'}}>
+                    <div className="price-total-display">
                       <span>Total:</span>
                       <span>R{price.total}</span>
                     </div>
@@ -294,7 +293,7 @@ const LandingPage: React.FC = () => {
               <a href="#">Terms of Service</a>
               <a href="#">POPIA Compliance</a>
               <a href="#">Refund Policy</a>
-              <p style={{marginTop: '1rem'}}>🔒 CIPC Registered Agent<br/>🛡️ Bank-grade Security</p>
+              <p className="footer-security-info">🔒 CIPC Registered Agent<br/>🛡️ Bank-grade Security</p>
             </div>
           </div>
           <div className="footer-bottom">
@@ -334,7 +333,7 @@ const LandingPage: React.FC = () => {
           <div className="popup-content exit-intent" onClick={(e) => e.stopPropagation()}>
             <button className="popup-close" onClick={() => setShowExitIntent(false)}>&times;</button>
             <h2>⚠️ Wait! Don't Leave!</h2>
-            <h3 style={{color: '#fbbf24'}}>Special Offer: 50% Off First Filing</h3>
+            <h3 className="exit-intent-offer-title">Special Offer: 50% Off First Filing</h3>
             <p>Join 15,000+ businesses who never miss a CIPC deadline. Get your first filing for just R87.50!</p>
             <button 
               className="popup-button discount"
@@ -345,7 +344,7 @@ const LandingPage: React.FC = () => {
             >
               🎉 Claim 50% Discount Now
             </button>
-            <p style={{fontSize: '0.9rem', marginTop: '1rem', opacity: 0.8}}>
+            <p className="exit-intent-disclaimer">
               * Limited time offer. Valid for new customers only.
             </p>
           </div>
