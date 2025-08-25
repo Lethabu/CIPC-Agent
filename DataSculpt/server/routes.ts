@@ -243,7 +243,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         filingType: 'beneficial_ownership',
         status: 'submitted',
         submittedAt: new Date(),
-        cipcReference: submissionResult.cipcReference,
+        cipcReference: 'formData' in submissionResult ? (submissionResult as any).formData.cipcReference : (submissionResult as any).cipcReference,
         amount: 750, // R7.50 total cost
         submissionData: formData,
         agentId: 'form_autopilot'
