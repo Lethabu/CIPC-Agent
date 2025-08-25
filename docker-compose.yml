@@ -1,19 +1,22 @@
-version: '3.8'
-
+version: "3.9"
 services:
-  cipc-agent:
-    build: .
-    ports:
-      - "3000:80"
+  db:
+    image: postgres:16-alpine
     environment:
-      - NODE_ENV=production
-    restart: unless-stopped
-    
-  # Optional: Add server service when ready
-  # cipc-server:
-  #   build: ./server
-  #   ports:
-  #     - "3001:3001"
-  #   environment:
-  #     - NODE_ENV=production
-  #   restart: unless-stopped
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: cipc_agent
+    ports: ["5432:5432"]
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+  api:
+    build: ./server
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/cipc_agent
+      CORS_ORIGIN: http://localhost:5173
+      NODE_ENV: development
+    depends_on: [db]
+    ports: ["3000:3000"]
+  web:
+    build: ./client
+    ports: ["5173:5173"]
+volumes:
+  pgdata:
