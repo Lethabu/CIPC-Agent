@@ -1,18 +1,16 @@
-# build
-FROM node:20-alpine AS build
+FROM node:18-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 COPY . .
 RUN npm run build
 
-# run
-FROM node:20-alpine
-USER node
+FROM node:18-alpine
 WORKDIR /app
-ENV NODE_ENV=production
-COPY --from=build /app/package*.json ./
+RUN addgroup app && adduser -S app -G app
+USER app
+COPY --from=builder /app/dist ./dist
+COPY package*.json ./
 RUN npm ci --omit=dev
-COPY --from=build /app/dist ./dist
 EXPOSE 3000
 CMD ["node", "dist/index.js"]
