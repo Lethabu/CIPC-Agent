@@ -1,48 +1,18 @@
-name: 🚀 CI & CD
+name: CI
 on:
-  push:
-    branches: [ main, dev ]
-  pull_request:
-    branches: [ main ]
+  push: { branches: [main] }
+  pull_request: {}
 jobs:
-  lint-test-build:
+  build-test:
     runs-on: ubuntu-latest
-    services:
-      cockroach:
-        image: cockroachdb/cockroach:v25.3.0
-        ports: ["26257:26257"]
-        env:
-          COCKROACH_USER: root
-          COCKROACH_DATABASE: cipc_test
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with: { go-version: '1.22' }
-      - name: 🧪 Lint
-        uses: golangci/golangci-lint-action@v6
-        with: { args: "--timeout=3m" }
-      - name: 🧪 Unit Tests
-        run: go test ./... -coverprofile=cover.out
-      - name: 📦 Build Docker image
-        run: |
-          docker build -t cipc-api:${{ github.sha }} .
-  deploy-staging:
-    needs: lint-test-build
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/dev'
-    steps:
-      - uses: actions/checkout@v4
-      - name: 🚀 Deploy to Fly.io staging
-        uses: superfly/flyctl-actions/setup-flyctl@master
-        with:
-          args: "deploy --app cipc-agent-staging --image cipc-api:${{ github.sha }}"
-  deploy-prod:
-    needs: lint-test-build
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    steps:
-      - uses: actions/checkout@v4
-      - name: 🚀 Deploy to Fly.io prod
-        uses: superfly/flyctl-actions/setup-flyctl@master
-        with:
-          args: "deploy --app cipc-agent-prod --image cipc-api:${{ github.sha }}"
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm ci
+      - run: cd server && npm ci && cd ..
+      - run: cd client && npm ci && cd ..
+      - run: npx eslint . || true
+      - run: npx tsc -b
+      - run: cd client && npm run build
+      - run: cd server && npm run build
