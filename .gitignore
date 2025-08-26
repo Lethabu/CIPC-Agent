@@ -1,9 +1,1 @@
-.env
-.env.*
-!.env.example
-.DS_Store
-node_modules/
-dist/
-build/
-*.log
-*.exe
+-e ".env\n.env.*\n!.env.example\n.DS_Store\nnode_modules/\ndist/\nbuild/\n*.log\n*.exe" 
