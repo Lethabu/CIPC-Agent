@@ -1,0 +1,22 @@
+{
+	"folders": [
+		{
+			"name": "CIPC-Agent",
+			"path": "."
+		},
+		{
+			"name": ".bmad-core",
+			"path": "../appointmentbooking/.bmad-core"
+		}
+	],
+	"settings": {
+		"files.watcherExclude": {
+			"**/.git/objects/**": true,
+			"**/.git/subtree-cache/**": true,
+			"**/.hg/store/**": true,
+			"**/.git/**": true,
+			"**/node_modules/**": true,
+			"**/.vscode/**": true
+		}
+	}
+}
