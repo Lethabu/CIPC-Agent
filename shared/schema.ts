@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, timestamp, jsonb, boolean, integer } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, timestamp, jsonb, boolean, integer, serial, numeric } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -92,6 +92,24 @@ export const complianceAlerts = pgTable("compliance_alerts", {
   isRead: boolean("is_read").default(false),
   sentViaWhatsApp: boolean("sent_via_whatsapp").default(false),
   createdAt: timestamp("created_at").defaultNow(),
+});
+
+// New tables
+export const beneficialOwners = pgTable('beneficial_owners', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
+  regNo: text('reg_no').notNull(),
+  name: text('name').notNull(),
+  idNum: text('id_num').notNull(),
+  pct: numeric('pct').notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+export const consents = pgTable('consents', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`), // Changed to varchar to match existing schema
+  userId: text('user_id').notNull(),
+  type: text('type').notNull(),
+  grantedAt: timestamp('granted_at').defaultNow(),
+  consent: boolean('consent').default(false),
 });
 
 // Insert schemas
