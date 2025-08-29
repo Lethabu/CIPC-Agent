@@ -104,12 +104,16 @@ export const beneficialOwners = pgTable('beneficial_owners', {
   createdAt: timestamp('created_at').defaultNow(),
 });
 
-export const consents = pgTable('consents', {
-  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`), // Changed to varchar to match existing schema
-  userId: text('user_id').notNull(),
-  type: text('type').notNull(),
-  grantedAt: timestamp('granted_at').defaultNow(),
-  consent: boolean('consent').default(false),
+// POPIA-compliant consent logging table
+export const consentLogs = pgTable("consent_logs", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id), // Link to the user who gave consent
+  subjectPhone: varchar("subject_phone").notNull(),
+  subjectEntity: varchar("subject_entity"), // e.g., company registration number
+  purpose: varchar("purpose").notNull(), // e.g., "onboarding", "bo_filing__whatsapp"
+  grantedAt: timestamp("granted_at").defaultNow().notNull(),
+  grantedVia: varchar("granted_via").notNull(), // e.g., "WhatsApp-AiSensy"
+  meta: jsonb("meta"), // Store metadata like IP address, user agent, flow ID
 });
 
 // Insert schemas
@@ -172,3 +176,11 @@ export type InsertComplianceAlert = z.infer<typeof insertComplianceAlertSchema>;
 
 export type BeneficialOwnershipFiling = typeof beneficialOwnershipFilings.$inferSelect;
 export type InsertBeneficialOwnershipFiling = z.infer<typeof insertBeneficialOwnershipFilingSchema>;
+
+export const insertConsentLogSchema = createInsertSchema(consentLogs).omit({
+  id: true,
+  grantedAt: true,
+});
+
+export type ConsentLog = typeof consentLogs.$inferSelect;
+export type InsertConsentLog = z.infer<typeof insertConsentLogSchema>;
