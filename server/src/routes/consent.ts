@@ -12,7 +12,7 @@ router.post("/", async (req, res) => {
 
     res.status(201).json({ success: true, data: result[0] });
   } catch (error) {
-    console.error("Error logging consent:", error);
+    req.log.error({ err: error }, "Error logging consent");
     res.status(500).json({ success: false, error: "Failed to log consent" });
   }
 });
