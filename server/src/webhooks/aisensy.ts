@@ -25,8 +25,13 @@ router.post('/', (req, res) => {
   const secret = process.env.AISENSY_WEBHOOK_SECRET;
   const signature = req.headers['x-aisensy-signature'] as string | undefined;
 
-  if (!verifySignature(req.body, signature, secret!)) {
-    console.warn('Invalid AiSensy webhook signature received.');
+  if (!secret) {
+    req.log.error('AISENSY_WEBHOOK_SECRET is not configured.');
+    return res.status(500).send('Webhook secret not configured');
+  }
+
+  if (!verifySignature(req.body, signature, secret)) {
+    req.log.warn('Invalid AiSensy webhook signature received.');
     return res.status(401).send('Invalid signature');
   }
 
@@ -35,8 +40,7 @@ router.post('/', (req, res) => {
     const payload = JSON.parse(req.body.toString('utf8'));
 
     // Placeholder for idempotent event processing and asynchronous handling
-    console.log(`Received valid AiSensy webhook with event ID: ${payload.id || 'N/A'}.`);
-    console.log('Enqueueing event for background processing...');
+    req.log.info({ eventId: payload.id || 'N/A' }, 'Received valid AiSensy webhook. Enqueueing for processing.');
 
     // In a real implementation, this would be an async call to a message queue or job scheduler
     // processWebhookEvent(payload);
@@ -44,7 +48,7 @@ router.post('/', (req, res) => {
     // Respond quickly to AiSensy to prevent timeouts
     res.status(200).json({ ok: true, message: "Event received" });
   } catch (error) {
-    console.error('Error processing AiSensy webhook:', error);
+    req.log.error({ err: error }, 'Error processing AiSensy webhook');
     res.status(500).send('Error processing webhook');
   }
 });
