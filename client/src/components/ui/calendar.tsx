@@ -51,12 +51,11 @@ function Calendar({
         day_hidden: "invisible",
         ...classNames,
       }}
-      // @ts-ignore
       components={{
-        IconLeft: ({ className, ...props }: any) => (
+        IconLeft: ({ className, ...props }) => (
           <ChevronLeft className={cn("h-4 w-4", className)} {...props} />
         ),
-        IconRight: ({ className, ...props }: any) => (
+        IconRight: ({ className, ...props }) => (
           <ChevronRight className={cn("h-4 w-4", className)} {...props} />
         ),
       }}
