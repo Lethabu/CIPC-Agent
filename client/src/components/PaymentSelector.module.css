@@ -1,0 +1,97 @@
+.paymentSelector {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.paymentForm {
+  margin-top: 1.5rem;
+}
+
+.formGroup {
+  margin-bottom: 1.5rem;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.formGroup input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.formGroup input:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.providerGrid {
+  display: grid;
+  gap: 1rem;
+}
+
+.providerCard {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.providerCard:hover {
+  border-color: #3b82f6;
+}
+
+.providerCard.selected {
+  border-color: #3b82f6;
+  background: #eff6ff;
+}
+
+.providerLogo {
+  font-size: 2rem;
+  margin-right: 1rem;
+}
+
+.providerName {
+  font-weight: 600;
+  color: #374151;
+}
+
+.providerDesc {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.payButton {
+  width: 100%;
+  padding: 1rem;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.payButton:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.payButton:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}

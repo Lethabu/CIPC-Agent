@@ -4,8 +4,17 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/navigation/navbar";
 
+interface DashboardData {
+  stats: {
+    formsFiledThisMonth: number;
+    alertsSent: number;
+    costSaved: number;
+  };
+  // Add other properties from the API response here
+}
+
 export default function Dashboard() {
-  const { data: dashboardData, isLoading } = useQuery({
+  const { data: dashboardData, isLoading } = useQuery<DashboardData>({
     queryKey: ["/api/analytics/dashboard/default"],
   });
 
