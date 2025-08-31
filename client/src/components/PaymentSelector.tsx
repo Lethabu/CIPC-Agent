@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import styles from './PaymentSelector.module.css';
 
 interface PaymentSelectorProps {
   amount: number;
@@ -53,11 +54,11 @@ const PaymentSelector: React.FC<PaymentSelectorProps> = ({ amount, service, onPa
   };
 
   return (
-    <div className="payment-selector">
+    <div className={styles.paymentSelector}>
       <h3>Complete Your Payment - R{amount}</h3>
       
-      <div className="payment-form">
-        <div className="form-group">
+      <div className={styles.paymentForm}>
+        <div className={styles.formGroup}>
           <label>Email Address *</label>
           <input
             type="email"
@@ -68,7 +69,7 @@ const PaymentSelector: React.FC<PaymentSelectorProps> = ({ amount, service, onPa
           />
         </div>
 
-        <div className="form-group">
+        <div className={styles.formGroup}>
           <label>Phone Number</label>
           <input
             type="tel"
@@ -78,19 +79,19 @@ const PaymentSelector: React.FC<PaymentSelectorProps> = ({ amount, service, onPa
           />
         </div>
 
-        <div className="form-group">
+        <div className={styles.formGroup}>
           <label>Payment Method</label>
-          <div className="provider-grid">
+          <div className={styles.providerGrid}>
             {paymentProviders.map(provider => (
               <div
                 key={provider.id}
-                className={`provider-card ${selectedProvider === provider.id ? 'selected' : ''}`}
+                className={`${styles.providerCard} ${selectedProvider === provider.id ? styles.selected : ''}`}
                 onClick={() => setSelectedProvider(provider.id)}
               >
-                <div className="provider-logo">{provider.logo}</div>
-                <div className="provider-info">
-                  <div className="provider-name">{provider.name}</div>
-                  <div className="provider-desc">{provider.description}</div>
+                <div className={styles.providerLogo}>{provider.logo}</div>
+                <div className={styles.providerInfo}>
+                  <div className={styles.providerName}>{provider.name}</div>
+                  <div className={styles.providerDesc}>{provider.description}</div>
                 </div>
               </div>
             ))}
@@ -98,113 +99,13 @@ const PaymentSelector: React.FC<PaymentSelectorProps> = ({ amount, service, onPa
         </div>
 
         <button
-          className="pay-button"
+          className={styles.payButton}
           onClick={handlePayment}
           disabled={loading || !email}
         >
           {loading ? 'Processing...' : `Pay R${amount} with ${paymentProviders.find(p => p.id === selectedProvider)?.name}`}
         </button>
       </div>
-
-      <style jsx>{`
-        .payment-selector {
-          max-width: 500px;
-          margin: 0 auto;
-          padding: 2rem;
-          background: white;
-          border-radius: 15px;
-          box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-
-        .payment-form {
-          margin-top: 1.5rem;
-        }
-
-        .form-group {
-          margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-          display: block;
-          margin-bottom: 0.5rem;
-          font-weight: 600;
-          color: #374151;
-        }
-
-        .form-group input {
-          width: 100%;
-          padding: 0.75rem;
-          border: 2px solid #e5e7eb;
-          border-radius: 8px;
-          font-size: 1rem;
-        }
-
-        .form-group input:focus {
-          outline: none;
-          border-color: #3b82f6;
-        }
-
-        .provider-grid {
-          display: grid;
-          gap: 1rem;
-        }
-
-        .provider-card {
-          display: flex;
-          align-items: center;
-          padding: 1rem;
-          border: 2px solid #e5e7eb;
-          border-radius: 8px;
-          cursor: pointer;
-          transition: all 0.2s;
-        }
-
-        .provider-card:hover {
-          border-color: #3b82f6;
-        }
-
-        .provider-card.selected {
-          border-color: #3b82f6;
-          background: #eff6ff;
-        }
-
-        .provider-logo {
-          font-size: 2rem;
-          margin-right: 1rem;
-        }
-
-        .provider-name {
-          font-weight: 600;
-          color: #374151;
-        }
-
-        .provider-desc {
-          font-size: 0.875rem;
-          color: #6b7280;
-        }
-
-        .pay-button {
-          width: 100%;
-          padding: 1rem;
-          background: #3b82f6;
-          color: white;
-          border: none;
-          border-radius: 8px;
-          font-size: 1.1rem;
-          font-weight: 600;
-          cursor: pointer;
-          transition: background 0.2s;
-        }
-
-        .pay-button:hover:not(:disabled) {
-          background: #2563eb;
-        }
-
-        .pay-button:disabled {
-          background: #9ca3af;
-          cursor: not-allowed;
-        }
-      `}</style>
     </div>
   );
 };
