@@ -1,0 +1,32 @@
+[
+  {
+    "id": "514c3c3d-c818-4525-a5a9-e11499980487",
+    "data": [
+      {
+        "text": "7",
+        "meta": "@User_query7",
+        "alias": "user_query7",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "0181c838-b098-4e81-bfc1-86a989a7ab70",
+    "data": [
+      {
+        "text": "userquery7",
+        "meta": "@User_query7",
+        "alias": "user_query7",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  }
+]

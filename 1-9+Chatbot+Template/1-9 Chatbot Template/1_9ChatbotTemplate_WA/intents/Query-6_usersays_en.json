@@ -1,0 +1,32 @@
+[
+  {
+    "id": "1e8e7503-930d-40b6-b7b2-8e5a3b4217b2",
+    "data": [
+      {
+        "text": "6",
+        "meta": "@User_query6",
+        "alias": "user_query6",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 1,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "a2252ea3-781c-43d6-8fd4-504dd57416a8",
+    "data": [
+      {
+        "text": "userquery6",
+        "meta": "@User_query6",
+        "alias": "user_query6",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  }
+]

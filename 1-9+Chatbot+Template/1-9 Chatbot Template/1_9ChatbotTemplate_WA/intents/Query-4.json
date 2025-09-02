@@ -1,0 +1,50 @@
+{
+  "id": "e4a7fa15-b2ed-4e19-9c90-6b32044e1037",
+  "name": "Query-4",
+  "auto": true,
+  "contexts": [],
+  "responses": [
+    {
+      "resetContexts": false,
+      "action": "",
+      "affectedContexts": [],
+      "parameters": [
+        {
+          "id": "abab1009-185a-4b21-ae05-c2c556d4cd29",
+          "name": "user_query4",
+          "required": false,
+          "dataType": "@User_query4",
+          "value": "$user_query4",
+          "defaultValue": "",
+          "isList": false,
+          "prompts": [],
+          "promptMessages": [],
+          "noMatchPromptMessages": [],
+          "noInputPromptMessages": [],
+          "outputDialogContexts": []
+        }
+      ],
+      "messages": [
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "en",
+          "speech": [
+            "This Intent will be triggered if users type option 4.\n\nCustomize the response for option 4.\n\n👉 Provide proper spacing between the paragraphs to improve readability."
+          ],
+          "condition": ""
+        }
+      ],
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": false,
+  "webhookForSlotFilling": false,
+  "fallbackIntent": false,
+  "events": [],
+  "conditionalResponses": [],
+  "condition": "",
+  "conditionalFollowupEvents": []
+}

@@ -1,0 +1,50 @@
+{
+  "id": "6e17ded6-bc97-4e4b-8b23-cd2a730f1c7a",
+  "name": "Query-7",
+  "auto": true,
+  "contexts": [],
+  "responses": [
+    {
+      "resetContexts": false,
+      "action": "",
+      "affectedContexts": [],
+      "parameters": [
+        {
+          "id": "0e866a08-96a0-4864-8122-ce35d8de280f",
+          "name": "user_query7",
+          "required": false,
+          "dataType": "@User_query7",
+          "value": "$user_query7",
+          "defaultValue": "",
+          "isList": false,
+          "prompts": [],
+          "promptMessages": [],
+          "noMatchPromptMessages": [],
+          "noInputPromptMessages": [],
+          "outputDialogContexts": []
+        }
+      ],
+      "messages": [
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "en",
+          "speech": [
+            "This Intent will be triggered if users type option 7.\n\nCustomize the response for option 7.\n\n👉Create buttons at the bottom as shown in the Welcome Intent."
+          ],
+          "condition": ""
+        }
+      ],
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": false,
+  "webhookForSlotFilling": false,
+  "fallbackIntent": false,
+  "events": [],
+  "conditionalResponses": [],
+  "condition": "",
+  "conditionalFollowupEvents": []
+}

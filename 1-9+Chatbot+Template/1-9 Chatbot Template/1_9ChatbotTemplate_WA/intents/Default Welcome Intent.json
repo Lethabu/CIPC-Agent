@@ -1,0 +1,39 @@
+{
+  "id": "367ee559-d362-4d4d-8e87-bbb336ff5553",
+  "name": "Default Welcome Intent",
+  "auto": true,
+  "contexts": [],
+  "responses": [
+    {
+      "resetContexts": false,
+      "action": "input.welcome",
+      "affectedContexts": [],
+      "parameters": [],
+      "messages": [
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "en",
+          "speech": [
+            "Hi, This is your WA Chatbot Template for 9 Different Items. \n\nYou can add or subtract according to your need. \n\nNote : (*Bold* - Will become bold text WA)\n            (_Italic_ - Will become italic in WA)\n\n1. Option 1\n2. Option 2\n3.Option 3\n4. Option 4\n5. Option 5\n6. Option 6\n7. Option 7\n8. Option 8\n9. Option 9"
+          ],
+          "condition": ""
+        }
+      ],
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": false,
+  "webhookForSlotFilling": false,
+  "fallbackIntent": false,
+  "events": [
+    {
+      "name": "WELCOME"
+    }
+  ],
+  "conditionalResponses": [],
+  "condition": "",
+  "conditionalFollowupEvents": []
+}
