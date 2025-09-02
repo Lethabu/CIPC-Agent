@@ -1,0 +1,32 @@
+[
+  {
+    "id": "08b5b444-83c3-47fa-959d-94a644abf986",
+    "data": [
+      {
+        "text": "2",
+        "meta": "@User_query2",
+        "alias": "user_query2",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 1,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "a3fae8ef-182b-4db0-b995-06ebbe4bc271",
+    "data": [
+      {
+        "text": "user query 2",
+        "meta": "@User_query2",
+        "alias": "user_query2",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  }
+]

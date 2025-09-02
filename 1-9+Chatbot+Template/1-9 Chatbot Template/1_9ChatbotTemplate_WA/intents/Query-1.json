@@ -1,0 +1,67 @@
+{
+  "id": "8f7cc218-39cc-46f2-a4ac-8a9c7463152d",
+  "name": "Query-1",
+  "auto": true,
+  "contexts": [],
+  "responses": [
+    {
+      "resetContexts": false,
+      "action": "",
+      "affectedContexts": [],
+      "parameters": [
+        {
+          "id": "fc3d3cac-3352-4a07-8251-589f3fd6d638",
+          "name": "user_query1",
+          "required": false,
+          "dataType": "@User_query1",
+          "value": "$user_query1",
+          "defaultValue": "",
+          "isList": false,
+          "prompts": [],
+          "promptMessages": [],
+          "noMatchPromptMessages": [],
+          "noInputPromptMessages": [],
+          "outputDialogContexts": []
+        }
+      ],
+      "messages": [
+        {
+          "type": "basic_card",
+          "platform": "google",
+          "subtitle": "IMAGE",
+          "title": "Title",
+          "textToSpeech": "",
+          "formattedText": "Your Text Response will be here.\nAnd, \n\nEnter your video/file/image url in the URL section above.\n\nImage Accessibility Text For File Type (Instructions) : \n\nIMAGE for image.\nVIDEO for videos.\nFILE for doc or pdfs.\n(As kept above)",
+          "image": {
+            "url": "https://aisensy.com/wp-content/uploads/2020/11/AI-SensyPSD-03-2-1280x255.png",
+            "accessibilityText": "Could Be anything"
+          },
+          "lang": "en",
+          "condition": ""
+        },
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "en",
+          "speech": [
+            "This Intent will be triggered if users type option 1.\n\nCustomize the response for option 1.\n\nTo add image/video/file in any intent, add card response from Google Assistant as shown here."
+          ],
+          "condition": ""
+        }
+      ],
+      "defaultResponsePlatforms": {
+        "google": true
+      },
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": false,
+  "webhookForSlotFilling": false,
+  "fallbackIntent": false,
+  "events": [],
+  "conditionalResponses": [],
+  "condition": "",
+  "conditionalFollowupEvents": []
+}

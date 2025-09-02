@@ -1,0 +1,50 @@
+{
+  "id": "e91fdb9d-a8a6-43d3-b206-a801696a9ad0",
+  "name": "Query-8",
+  "auto": true,
+  "contexts": [],
+  "responses": [
+    {
+      "resetContexts": false,
+      "action": "",
+      "affectedContexts": [],
+      "parameters": [
+        {
+          "id": "8ad6505d-921c-4ea2-b3d6-c8dcc791f436",
+          "name": "user_query8",
+          "required": false,
+          "dataType": "@User_query8",
+          "value": "$user_query8",
+          "defaultValue": "",
+          "isList": false,
+          "prompts": [],
+          "promptMessages": [],
+          "noMatchPromptMessages": [],
+          "noInputPromptMessages": [],
+          "outputDialogContexts": []
+        }
+      ],
+      "messages": [
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "en",
+          "speech": [
+            "This Intent will be triggered if users type option 8.\n\nCustomize the response for option 8.\n\n👉 Never forget to put back, menu, main menu keywords in your main intent."
+          ],
+          "condition": ""
+        }
+      ],
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": false,
+  "webhookForSlotFilling": false,
+  "fallbackIntent": false,
+  "events": [],
+  "conditionalResponses": [],
+  "condition": "",
+  "conditionalFollowupEvents": []
+}

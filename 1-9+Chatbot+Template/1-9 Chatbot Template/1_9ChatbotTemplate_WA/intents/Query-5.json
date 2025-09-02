@@ -1,0 +1,50 @@
+{
+  "id": "fc9dfdd8-3616-4955-a17d-f2a6debd615d",
+  "name": "Query-5",
+  "auto": true,
+  "contexts": [],
+  "responses": [
+    {
+      "resetContexts": false,
+      "action": "",
+      "affectedContexts": [],
+      "parameters": [
+        {
+          "id": "d8e1d9c1-06e9-45e0-9d94-91833a4ddc4f",
+          "name": "user_query5",
+          "required": false,
+          "dataType": "@User_query5",
+          "value": "$user_query5",
+          "defaultValue": "",
+          "isList": false,
+          "prompts": [],
+          "promptMessages": [],
+          "noMatchPromptMessages": [],
+          "noInputPromptMessages": [],
+          "outputDialogContexts": []
+        }
+      ],
+      "messages": [
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "en",
+          "speech": [
+            "This Intent will be triggered if users type option 5.\n\nCustomize the response for option 5.\n\n👉*Use bold and italics to highlight keywords.*"
+          ],
+          "condition": ""
+        }
+      ],
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": false,
+  "webhookForSlotFilling": false,
+  "fallbackIntent": false,
+  "events": [],
+  "conditionalResponses": [],
+  "condition": "",
+  "conditionalFollowupEvents": []
+}

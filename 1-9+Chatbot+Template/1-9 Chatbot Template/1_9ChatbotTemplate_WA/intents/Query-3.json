@@ -1,0 +1,50 @@
+{
+  "id": "f6eaa9b5-cb0d-461a-a2f8-e79ba4fbbbb5",
+  "name": "Query-3",
+  "auto": true,
+  "contexts": [],
+  "responses": [
+    {
+      "resetContexts": false,
+      "action": "",
+      "affectedContexts": [],
+      "parameters": [
+        {
+          "id": "2b5d8e22-b8a5-4ace-842b-73616b5dc2d9",
+          "name": "user_query3",
+          "required": false,
+          "dataType": "@User_query3",
+          "value": "$user_query3",
+          "defaultValue": "",
+          "isList": false,
+          "prompts": [],
+          "promptMessages": [],
+          "noMatchPromptMessages": [],
+          "noInputPromptMessages": [],
+          "outputDialogContexts": []
+        }
+      ],
+      "messages": [
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "en",
+          "speech": [
+            "This Intent will be triggered if users type option 3.\n\nCustomize the response for option 3.\n\n👉Add videos and graphics whenever necessary."
+          ],
+          "condition": ""
+        }
+      ],
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": false,
+  "webhookForSlotFilling": false,
+  "fallbackIntent": false,
+  "events": [],
+  "conditionalResponses": [],
+  "condition": "",
+  "conditionalFollowupEvents": []
+}

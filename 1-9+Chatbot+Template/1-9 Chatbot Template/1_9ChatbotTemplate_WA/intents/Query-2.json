@@ -1,0 +1,50 @@
+{
+  "id": "354784c4-83ea-4fc0-8304-91df3ce85ee7",
+  "name": "Query-2",
+  "auto": true,
+  "contexts": [],
+  "responses": [
+    {
+      "resetContexts": false,
+      "action": "",
+      "affectedContexts": [],
+      "parameters": [
+        {
+          "id": "75c162c8-effe-4045-aa24-789ae9417889",
+          "name": "user_query2",
+          "required": false,
+          "dataType": "@User_query2",
+          "value": "$user_query2",
+          "defaultValue": "",
+          "isList": false,
+          "prompts": [],
+          "promptMessages": [],
+          "noMatchPromptMessages": [],
+          "noInputPromptMessages": [],
+          "outputDialogContexts": []
+        }
+      ],
+      "messages": [
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "en",
+          "speech": [
+            "This Intent will be triggered if users type option 2.\n\nCustomize the response for option 2.\n\nYou can add emojis too😁"
+          ],
+          "condition": ""
+        }
+      ],
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": false,
+  "webhookForSlotFilling": false,
+  "fallbackIntent": false,
+  "events": [],
+  "conditionalResponses": [],
+  "condition": "",
+  "conditionalFollowupEvents": []
+}
