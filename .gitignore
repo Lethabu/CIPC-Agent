@@ -7,4 +7,5 @@ build/
 *.log
 *.exe
 .DS_Store
-"package-lock.json" 
+**/package-lock.json
+package-lock.json
