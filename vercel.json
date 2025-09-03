@@ -1,4 +1,4 @@
 {
-  "installCommand": "npm install --legacy-peer-deps --no-package-lock",
-  "root": "client"
+  "installCommand": "cd client && npm install --legacy-peer-deps --no-package-lock",
+  "buildCommand": "cd client && npm run build"
 }
