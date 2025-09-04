@@ -1,61 +1,9 @@
 // CIPC Agent - Multi-Payment Gateway Integration
 // Supporting PayStack, Yoco, PayFast, and other SA payment providers
 
-import crypto from 'crypto';
 import axios from 'axios';
 
-// Payment provider configurations
-interface PaymentConfig {
-  paystack: {
-    secretKey: string;
-    publicKey: string;
-    baseUrl: string;
-  };
-  yoco: {
-    secretKey: string;
-    publicKey: string;
-    baseUrl: string;
-  };
-  payfast: {
-    merchantId: string;
-    merchantKey: string;
-    passphrase: string;
-    baseUrl: string;
-  };
-  ozow: {
-    siteCode: string;
-    apiKey: string;
-    privateKey: string;
-    baseUrl: string;
-  };
-}
-
-const paymentConfig: PaymentConfig = {
-  paystack: {
-    secretKey: process.env.PAYSTACK_SECRET_KEY || '',
-    publicKey: process.env.PAYSTACK_PUBLIC_KEY || '',
-    baseUrl: 'https://api.paystack.co'
-  },
-  yoco: {
-    secretKey: process.env.YOCO_SECRET_KEY || '',
-    publicKey: process.env.YOCO_PUBLIC_KEY || '',
-    baseUrl: 'https://online.yoco.com'
-  },
-  payfast: {
-    merchantId: process.env.PAYFAST_MERCHANT_ID || '',
-    merchantKey: process.env.PAYFAST_MERCHANT_KEY || '',
-    passphrase: process.env.PAYFAST_PASSPHRASE || '',
-    baseUrl: 'https://www.payfast.co.za'
-  },
-  ozow: {
-    siteCode: process.env.OZOW_SITE_CODE || '',
-    apiKey: process.env.OZOW_API_KEY || '',
-    privateKey: process.env.OZOW_PRIVATE_KEY || '',
-    baseUrl: 'https://api.ozow.com'
-  }
-};
-
-// Payment interfaces
+// Defines the shape of a payment request
 interface PaymentRequest {
   amount: number; // in cents
   currency: string;
@@ -65,8 +13,10 @@ interface PaymentRequest {
   description: string;
   callbackUrl: string;
   metadata?: Record<string, any>;
+  provider: string; // 'paystack' | 'payfast' | 'yoco' | etc.
 }
 
+// Defines the shape of the response from the payment creation
 interface PaymentResponse {
   success: boolean;
   paymentId?: string;
@@ -76,6 +26,7 @@ interface PaymentResponse {
   provider: string;
 }
 
+// Defines the shape of the response from a payment status check
 interface PaymentStatus {
   id: string;
   status: 'pending' | 'success' | 'failed' | 'cancelled';
@@ -87,244 +38,123 @@ interface PaymentStatus {
   failureReason?: string;
 }
 
-// Base payment provider interface
-abstract class PaymentProvider {
-  protected config: any;
-  protected name: string;
+// Payment service orchestrator
+export class PaymentService {
+  private goWorkerUrl: string;
 
-  constructor(config: any, name: string) {
-    this.config = config;
-    this.name = name;
+  constructor() {
+    // The URL of the Go worker that exposes the /create-payment endpoint
+    this.goWorkerUrl = process.env.GO_WORKER_URL || 'http://localhost:8081';
   }
 
-  abstract createPayment(request: PaymentRequest): Promise<PaymentResponse>;
-  abstract verifyPayment(paymentId: string): Promise<PaymentStatus>;
-  abstract processWebhook(body: any, signature?: string): Promise<any>;
-}
-
-// PayStack implementation
-class PayStackProvider extends PaymentProvider {
   async createPayment(request: PaymentRequest): Promise<PaymentResponse> {
     try {
       const response = await axios.post(
-        `${this.config.baseUrl}/transaction/initialize`,
+        `${this.goWorkerUrl}/create-payment`,
         {
-          email: request.email,
-          amount: request.amount,
-          currency: request.currency,
-          reference: request.reference,
-          callback_url: request.callbackUrl,
-          metadata: {
-            phone: request.phone,
-            description: request.description,
-            ...request.metadata
-          }
+          provider: request.provider,
+          request: {
+            // PayStack-specific fields
+            email: request.email,
+            amount: request.amount,
+            currency: request.currency,
+            reference: request.reference,
+            callback_url: request.callbackUrl,
+            metadata: request.metadata,
+
+            // PayFast-specific fields (adjust as needed)
+            merchant_id: process.env.PAYFAST_MERCHANT_ID,
+            merchant_key: process.env.PAYFAST_MERCHANT_KEY,
+            return_url: request.callbackUrl,
+            cancel_url: request.callbackUrl,
+            notify_url: `${request.callbackUrl}/webhook/payfast`,
+            name_first: 'CIPC',
+            name_last: 'Agent Client',
+            cell_number: request.phone,
+            m_payment_id: request.reference,
+            item_name: request.description,
+            item_description: request.description,
+
+            // Yoco-specific fields
+            successUrl: request.callbackUrl,
+            failureUrl: request.callbackUrl, // Or a different URL for failure
+          },
         },
         {
           headers: {
-            Authorization: `Bearer ${this.config.secretKey}`,
-            'Content-Type': 'application/json'
-          }
+            'Content-Type': 'application/json',
+          },
         }
       );
 
-      if (response.data.status) {
-        return {
-          success: true,
-          paymentId: response.data.data.reference,
-          checkoutUrl: response.data.data.authorization_url,
-          reference: response.data.data.reference,
-          provider: this.name
-        };
-      }
-
-      return {
-        success: false,
-        error: response.data.message,
-        provider: this.name
-      };
+      // The Go worker will return the result from the Temporal workflow
+      return response.data as PaymentResponse;
     } catch (error: any) {
       return {
         success: false,
-        error: error.response?.data?.message || 'PayStack payment creation failed',
-        provider: this.name
+        error: error.response?.data?.error || `Failed to create payment with ${request.provider}`,
+        provider: request.provider,
       };
     }
-  }
-
-  async verifyPayment(reference: string): Promise<PaymentStatus> {
-    try {
-      const response = await axios.get(
-        `${this.config.baseUrl}/transaction/verify/${reference}`,
-        {
-          headers: {
-            Authorization: `Bearer ${this.config.secretKey}`
-          }
-        }
-      );
-
-      const data = response.data.data;
-      return {
-        id: data.id.toString(),
-        status: data.status === 'success' ? 'success' : 
-                data.status === 'failed' ? 'failed' : 'pending',
-        amount: data.amount,
-        currency: data.currency,
-        reference: data.reference,
-        provider: this.name,
-        paidAt: data.paid_at ? new Date(data.paid_at) : undefined,
-        failureReason: data.gateway_response
-      };
-    } catch (error: any) {
-      throw new Error(`PayStack verification failed: ${error.message}`);
-    }
-  }
-
-  async processWebhook(body: any, signature?: string): Promise<any> {
-    if (signature) {
-      const hash = crypto
-        .createHmac('sha512', this.config.secretKey)
-        .update(JSON.stringify(body))
-        .digest('hex');
-      
-      if (hash !== signature) {
-        throw new Error('Invalid PayStack webhook signature');
-      }
-    }
-
-    return {
-      event: body.event,
-      data: body.data,
-      provider: this.name
-    };
-  }
-}
-
-// PayFast implementation
-class PayFastProvider extends PaymentProvider {
-  async createPayment(request: PaymentRequest): Promise<PaymentResponse> {
-    try {
-      const paymentData = {
-        merchant_id: this.config.merchantId,
-        merchant_key: this.config.merchantKey,
-        return_url: request.callbackUrl,
-        cancel_url: request.callbackUrl,
-        notify_url: `${request.callbackUrl}/webhook/payfast`,
-        name_first: 'CIPC',
-        name_last: 'Agent Client',
-        email_address: request.email,
-        cell_number: request.phone,
-        m_payment_id: request.reference,
-        amount: (request.amount / 100).toFixed(2),
-        item_name: request.description,
-        item_description: request.description
-      };
-
-      const signature = this.generatePayFastSignature(paymentData);
-      const formUrl = this.buildPayFastUrl({ ...paymentData, signature });
-
-      return {
-        success: true,
-        paymentId: request.reference,
-        checkoutUrl: formUrl,
-        reference: request.reference,
-        provider: this.name
-      };
-    } catch (error: any) {
-      return {
-        success: false,
-        error: 'PayFast payment creation failed',
-        provider: this.name
-      };
-    }
-  }
-
-  async verifyPayment(paymentId: string): Promise<PaymentStatus> {
-    // PayFast verification through ITN
-    return {
-      id: paymentId,
-      status: 'pending',
-      amount: 0,
-      currency: 'ZAR',
-      reference: paymentId,
-      provider: this.name
-    };
-  }
-
-  async processWebhook(body: any): Promise<any> {
-    const isValid = this.validatePayFastITN(body);
-    if (!isValid) {
-      throw new Error('Invalid PayFast ITN');
-    }
-
-    return {
-      event: 'payment_complete',
-      data: body,
-      provider: this.name
-    };
-  }
-
-  private generatePayFastSignature(data: any): string {
-    const sortedKeys = Object.keys(data).sort();
-    const queryString = sortedKeys
-      .map(key => `${key}=${encodeURIComponent(data[key])}`)
-      .join('&');
-
-    const fullString = queryString + '&passphrase=' + this.config.passphrase;
-    return crypto.createHash('md5').update(fullString).digest('hex');
-  }
-
-  private buildPayFastUrl(data: any): string {
-    const params = new URLSearchParams(data);
-    return `${this.config.baseUrl}/eng/process?${params.toString()}`;
-  }
-
-  private validatePayFastITN(data: any): boolean {
-    const signature = data.signature;
-    delete data.signature;
-    const generatedSignature = this.generatePayFastSignature(data);
-    return signature === generatedSignature;
-  }
-}
-
-// Payment service orchestrator
-export class PaymentService {
-  private providers: Map<string, PaymentProvider> = new Map();
-
-  constructor() {
-    this.providers.set('paystack', new PayStackProvider(paymentConfig.paystack, 'paystack'));
-    this.providers.set('payfast', new PayFastProvider(paymentConfig.payfast, 'payfast'));
-  }
-
-  async createPayment(provider: string, request: PaymentRequest): Promise<PaymentResponse> {
-    const paymentProvider = this.providers.get(provider);
-    if (!paymentProvider) {
-      throw new Error(`Payment provider ${provider} not supported`);
-    }
-
-    return await paymentProvider.createPayment(request);
   }
 
   async verifyPayment(provider: string, paymentId: string): Promise<PaymentStatus> {
-    const paymentProvider = this.providers.get(provider);
-    if (!paymentProvider) {
-      throw new Error(`Payment provider ${provider} not supported`);
-    }
+    try {
+      const response = await axios.post(
+        `${this.goWorkerUrl}/verify-payment`,
+        {
+          provider,
+          paymentId,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
 
-    return await paymentProvider.verifyPayment(paymentId);
+      return response.data as PaymentStatus;
+    } catch (error: any) {
+      // It's good practice to create a default error response
+      // that matches the expected interface.
+      return {
+        id: paymentId,
+        status: 'failed',
+        amount: 0,
+        currency: '',
+        reference: '',
+        provider: provider,
+        failureReason: error.response?.data?.error || `Failed to verify payment with ${provider}`,
+      };
+    }
   }
 
   async processWebhook(provider: string, body: any, signature?: string): Promise<any> {
-    const paymentProvider = this.providers.get(provider);
-    if (!paymentProvider) {
-      throw new Error(`Payment provider ${provider} not supported`);
-    }
+    try {
+      const response = await axios.post(
+        `${this.goWorkerUrl}/webhook?provider=${provider}`,
+        body,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Paystack-Signature': signature, // Forward the signature
+          },
+        }
+      );
 
-    return await paymentProvider.processWebhook(body, signature);
+      return response.data;
+    } catch (error: any) {
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Failed to process webhook',
+      };
+    }
   }
 
   getAvailableProviders(): string[] {
-    return Array.from(this.providers.keys());
+    // The Go worker now determines the available providers
+    // You could have an endpoint on the Go worker to fetch this information
+    return ['paystack', 'payfast', 'yoco']; // For now, we'll hardcode this
   }
 }
 

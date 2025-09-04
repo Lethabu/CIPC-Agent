@@ -1,0 +1,48 @@
+# Kubernetes Deployment for the Node.js Server
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-server-deployment
+  labels:
+    app: node-server
+spec:
+  replicas: 2 # Run two instances for high availability
+  selector:
+    matchLabels:
+      app: node-server
+  template:
+    metadata:
+      labels:
+        app: node-server
+    spec:
+      containers:
+      - name: node-server
+        image: your-docker-repo/cipc-agent-node:latest # This will be updated by your CI/CD pipeline
+        ports:
+        - containerPort: 3000
+        env:
+        - name: TEMPORAL_ADDRESS
+          value: "temporal-frontend.temporal.svc.cluster.local:7233" # Address for a production Temporal install
+        - name: NODE_SERVER_URL
+          value: "http://node-server-service.default.svc.cluster.local:3000"
+        - name: INTERNAL_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: cipc-agent-secrets
+              key: internal-api-key
+---
+# Kubernetes Service to expose the Node.js Deployment
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: node-server-service
+spec:
+  selector:
+    app: node-server
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+  type: LoadBalancer # Exposes the service externally using a cloud provider's load balancer

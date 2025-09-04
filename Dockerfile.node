@@ -1,0 +1,54 @@
+# Dockerfile for the Node.js Server
+
+# ---- Build Stage ----
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+
+# Copy package.json and package-lock.json
+COPY package*.json ./
+
+# Install all dependencies (including dev dependencies for building)
+RUN npm install
+
+# Copy the rest of the application source code
+COPY . .
+
+# Compile TypeScript to JavaScript
+RUN npm run build
+
+# ---- Prune Dev Dependencies ----
+# This stage is to get a clean node_modules for production
+FROM node:18-alpine AS pruner
+
+WORKDIR /app
+
+COPY package*.json ./
+
+# Install only production dependencies
+RUN npm install --omit=dev
+
+
+# ---- Final Stage ----
+FROM node:18-alpine
+
+# It's a good practice to run as a non-root user
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+USER appuser
+
+WORKDIR /app
+
+# Copy production node_modules from the pruner stage
+COPY --from=pruner /app/node_modules ./node_modules
+
+# Copy compiled JavaScript from the builder stage
+COPY --from=builder /app/dist ./dist
+
+# Copy the public folder
+COPY public ./public
+
+# Expose the port the app runs on
+EXPOSE 3000
+
+# Command to run the application
+CMD ["node", "dist/server/index.js"]

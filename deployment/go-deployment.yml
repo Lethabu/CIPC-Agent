@@ -1,0 +1,31 @@
+# Kubernetes Deployment for the Go Worker
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-worker-deployment
+  labels:
+    app: go-worker
+spec:
+  replicas: 3 # Run three worker instances to process tasks in parallel
+  selector:
+    matchLabels:
+      app: go-worker
+  template:
+    metadata:
+      labels:
+        app: go-worker
+    spec:
+      containers:
+      - name: go-worker
+        image: your-docker-repo/cipc-agent-go:latest # This will be updated by your CI/CD pipeline
+        env:
+        - name: TEMPORAL_ADDRESS
+          value: "temporal-frontend.temporal.svc.cluster.local:7233" # Address for a production Temporal install
+        - name: NODE_SERVER_URL
+          value: "http://node-server-service.default.svc.cluster.local:3000"
+        - name: INTERNAL_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: cipc-agent-secrets
+              key: internal-api-key

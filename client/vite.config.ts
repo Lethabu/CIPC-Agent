@@ -11,5 +11,6 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist'
-  }
+  },
+  envPrefix: 'REACT_APP_'
 })

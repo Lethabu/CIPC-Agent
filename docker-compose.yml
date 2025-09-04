@@ -1,50 +1,48 @@
-services:
-  # PostgreSQL Database Service
-  db:
-    image: postgres:16-alpine
-    container_name: cipc-db
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres # This should be sourced from .env in production
-      POSTGRES_DB: cipc_agent
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    networks:
-      - cipc-network
-    restart: unless-stopped
+version: '3.8'
 
-  # Node.js Backend Service
-  server:
+services:
+  # Node.js Server (Frontend)
+  node-server:
     build:
       context: .
-      dockerfile: ./server/Dockerfile
-    container_name: cipc-server
-    depends_on:
-      - db
+      dockerfile: Dockerfile.node
     ports:
-      - "3000:3000"
-    env_file:
-      - ./.env
+      - "${NODE_PORT:-3000}:${NODE_PORT:-3000}"
+    environment:
+      - TEMPORAL_ADDRESS=temporal:7233
+      - NODE_SERVER_URL=http://node-server:${NODE_PORT:-3000}
+      - INTERNAL_API_KEY=${INTERNAL_API_KEY}
+    depends_on:
+      - temporal
     networks:
       - cipc-network
-    restart: unless-stopped
 
-  # React Frontend Service
-  client:
-    build: ./client
-    container_name: cipc-client
-    ports:
-      - "5173:5173"
+  # Go Worker (Backend)
+  go-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - TEMPORAL_ADDRESS=temporal:7233
+      - NODE_SERVER_URL=http://node-server:${NODE_PORT:-3000}
+      - INTERNAL_API_KEY=${INTERNAL_API_KEY}
     depends_on:
-      - server
+      - temporal
+      - node-server
     networks:
       - cipc-network
-    restart: unless-stopped
 
-volumes:
-  pgdata:
+  # Temporal Server
+  temporal:
+    image: temporalio/auto-setup:1.21.0
+    ports:
+      - "${TEMPORAL_ADDRESS:-localhost:7233}:7233" # gRPC frontend
+      - "${TEMPORal_UI_PORT:-8233}:8233" # Web UI
+    environment:
+      - DB=sqlite3
+      - TEMPORAL_BROADCAST_ADDRESS=temporal
+    networks:
+      - cipc-network
 
 networks:
   cipc-network:

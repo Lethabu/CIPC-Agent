@@ -55,7 +55,7 @@ const LandingPage: React.FC = () => {
   };
 
   const openWhatsApp = (message: string) => {
-    const phoneNumber = process.env.REACT_APP_AI_SENSY_WHATSAPP_NUMBER || '+27699171527'; // AI Sensy WhatsApp number
+    const phoneNumber = import.meta.env.VITE_AI_SENSY_WHATSAPP_NUMBER || '+27699171527'; // AI Sensy WhatsApp number
     window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, '_blank');
   };
 

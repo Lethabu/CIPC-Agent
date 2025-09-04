@@ -1,10 +1,10 @@
 import OpenAI from "openai";
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import type { AgentTask, AgentResponse } from "../aiOrchestrator.js";
 import { complianceCopilotAgent } from "./complianceCopilot.js"; // Import the new agent
 
 export class CipcCommander {
-  constructor(private openai: OpenAI, private gemini: GoogleGenAI) {}
+  constructor(private openai: OpenAI, private gemini: GoogleGenerativeAI) {}
 
   async routeTask(userIntent: string, userData?: any): Promise<AgentTask> {
     const prompt = `
