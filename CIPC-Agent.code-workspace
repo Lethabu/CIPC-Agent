@@ -3,10 +3,6 @@
 		{
 			"name": "CIPC-Agent",
 			"path": "."
-		},
-		{
-			"name": ".bmad-core",
-			"path": "../appointmentbooking/.bmad-core"
 		}
 	],
 	"settings": {
