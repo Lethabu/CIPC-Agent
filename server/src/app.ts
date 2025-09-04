@@ -1,13 +1,12 @@
 import express from "express";
 import helmet from "helmet";
 import cors from "cors";
-import rateLimit from "express-rate-limit";
 import pino from "pino";
-import pinoHttp from "pino-http";
-import { popia } from "./middleware/popia";
-import boRouter from './routes/bo';
-import consentRouter from './routes/consent';
-import aisensyWebhookRouter from './webhooks/aisensy';
+const pinoHttp = require("pino-http");
+import { popia } from "./middleware/popia.js";
+import boRouter from './routes/bo.js';
+import consentRouter from './routes/consent.js';
+import aisensyWebhookRouter from './webhooks/aisensy.js';
 
 const app = express();
 const logger = pino({ level: process.env.NODE_ENV === "production" ? "info" : "debug" });
@@ -21,7 +20,6 @@ app.use('/webhooks/aisensy', express.raw({ type: 'application/json' }), aisensyW
 
 // Standard JSON body parser for all other routes
 app.use(express.json({ limit: "1mb" }));
-app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 300 }));
 
 // POPIA Middleware for data sanitization and logging
 app.use(popia);

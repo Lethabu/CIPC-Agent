@@ -1,9 +1,9 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
-import { aiOrchestrator } from "./services/aiOrchestrator";
-import { DocumentProcessor, upload } from "./services/documentProcessor";
-import { whatsappService } from "./services/whatsappService";
+import { storage } from "./storage.js";
+import { aiOrchestrator } from "./services/aiOrchestrator.js";
+import { DocumentProcessor, upload } from "./services/documentProcessor.js";
+import { whatsappService } from "./services/whatsappService.js";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
@@ -230,7 +230,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const submissionResult = await aiOrchestrator.routeTask('submit_cipc_form', {
         formType: 'COR46',
         formData
-      });
+      }) as { cipcReference: string; [key: string]: any };
 
       // Create CIPC filing record
       const cipcFiling = await storage.createCipcFiling({

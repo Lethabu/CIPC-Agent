@@ -11,8 +11,8 @@ export interface WhatsAppResponse {
 }
 
 export class WhatsAppService {
-  private apiUrl: string;
-  private apiKey: string;
+  protected apiUrl: string;
+  protected apiKey: string;
   private phoneNumber: string;
 
   constructor() {

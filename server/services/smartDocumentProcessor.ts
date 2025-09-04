@@ -1,5 +1,5 @@
 import { OpenAI } from 'openai';
-import { DocumentProcessor, ProcessedDocument } from './documentProcessor';
+import { DocumentProcessor, ProcessedDocument } from './documentProcessor.js';
 import fs from 'fs';
 import path from 'path';
 

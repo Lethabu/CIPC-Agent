@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
-import { WhatsAppWebhookService } from '../services/whatsappWebhook'
-import { whatsappService } from '../services/whatsappService'
+import { WhatsAppWebhookService } from '../services/whatsappWebhook.js'
+import { whatsappService } from '../services/whatsappService.js'
 
 export async function handleWhatsAppWebhook(req: Request, res: Response) {
   if (req.method === 'POST') {

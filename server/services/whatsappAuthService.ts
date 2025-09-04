@@ -1,5 +1,5 @@
-import { WhatsAppService, WhatsAppMessage, WhatsAppResponse } from './whatsappService';
-import { AndroidHashGenerator } from '../utils/androidHashGenerator';
+import { WhatsAppService, WhatsAppMessage, WhatsAppResponse } from './whatsappService.js';
+import { AndroidHashGenerator } from '../utils/androidHashGenerator.js';
 
 export interface AuthTemplateConfig {
   templateName: string;
