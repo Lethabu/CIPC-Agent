@@ -1,12 +1,12 @@
 import OpenAI from "openai";
 import { GoogleGenAI } from "@google/genai";
-import { CipcCommander } from "./agents/cipcCommander";
-import { leadScoutAgent } from "./agents/leadScout";
-import { kycOnboarderAgent } from "./agents/kycOnboarder";
-import { complianceCopilotAgent } from "./agents/complianceCopilot"; // Import the new agent
-import { formAutopilotAgent } from "./agents/formAutopilot";
-import { regulationSentinelAgent } from "./agents/regulationSentinel";
-import { paymentRunnerAgent } from "./agents/paymentRunner";
+import { CipcCommander } from "./agents/cipcCommander.js";
+import { leadScoutAgent } from "./agents/leadScout.js";
+import { kycOnboarderAgent } from "./agents/kycOnboarder.js";
+import { complianceCopilotAgent } from "./agents/complianceCopilot.js"; // Import the new agent
+import { formAutopilotAgent } from "./agents/formAutopilot.js";
+import { regulationSentinelAgent } from "./agents/regulationSentinel.js";
+import { paymentRunnerAgent } from "./agents/paymentRunner.js";
 
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY_ENV_VAR || "" });

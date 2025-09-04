@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { whatsappAuthService } from '../services/whatsappAuthService';
-import { AndroidHashGenerator } from '../utils/androidHashGenerator';
+import { whatsappAuthService } from '../services/whatsappAuthService.js';
+import { AndroidHashGenerator } from '../utils/androidHashGenerator.js';
 
 const router = Router();
 
@@ -17,7 +17,8 @@ router.post('/send-otp', async (req, res) => {
     
     if (response.success) {
       // Store OTP in session/cache for verification
-      req.session = { ...req.session, otp, phoneNumber };
+      req.session.otp = otp;
+      req.session.phoneNumber = phoneNumber;
       res.json({ success: true, messageId: response.messageId });
     } else {
       res.status(500).json({ error: response.error });
@@ -39,7 +40,7 @@ router.post('/verify-otp', async (req, res) => {
     
     if (otp === sessionOtp) {
       // Clear session OTP
-      delete req.session?.otp;
+      req.session.otp = undefined;
       res.json({ success: true, verified: true });
     } else {
       res.status(400).json({ error: 'Invalid OTP' });

@@ -4,18 +4,18 @@ import {
   type Document, type InsertDocument, type AgentActivity, type InsertAgentActivity,
   type CipcFiling, type InsertCipcFiling, type ComplianceAlert, type InsertComplianceAlert,
   type BeneficialOwnershipFiling, type InsertBeneficialOwnershipFiling
-} from "@shared/schema";
-import { db } from "./db";
+} from "../shared/schema.js";
+import { db } from "./db.js";
 import { eq } from "drizzle-orm";
 
 // Interface for storage operations
 export interface IStorage {
   // User operations
-  getUser(id: string): Promise<User | undefined>;
+  getUser(id: string): Promise<User>;
   createUser(insertUser: InsertUser): Promise<User>;
   
   // Company operations
-  getCompany(id: string): Promise<Company | undefined>;
+  getCompany(id: string): Promise<Company>;
   createCompany(insertCompany: InsertCompany): Promise<Company>;
   
   // Document operations
@@ -26,7 +26,7 @@ export interface IStorage {
   createAgentActivity(insertActivity: InsertAgentActivity): Promise<AgentActivity>;
   
   // CIPC filing operations
-  getCipcFiling(id: string): Promise<CipcFiling | undefined>;
+  getCipcFiling(id: string): Promise<CipcFiling>;
   createCipcFiling(insertFiling: InsertCipcFiling): Promise<CipcFiling>;
   
   // Compliance alert operations
@@ -34,15 +34,15 @@ export interface IStorage {
   createComplianceAlert(insertAlert: InsertComplianceAlert): Promise<ComplianceAlert>;
   
   // Beneficial ownership operations
-  getBeneficialOwnershipFiling(companyId: string): Promise<BeneficialOwnershipFiling | undefined>;
+  getBeneficialOwnershipFiling(companyId: string): Promise<BeneficialOwnershipFiling>;
   createBeneficialOwnershipFiling(insertFiling: InsertBeneficialOwnershipFiling): Promise<BeneficialOwnershipFiling>;
   updateBeneficialOwnershipFiling(id: string, updates: Partial<InsertBeneficialOwnershipFiling>): Promise<BeneficialOwnershipFiling>;
 }
 
 export class DatabaseStorage implements IStorage {
-  async getUser(id: string): Promise<User | undefined> {
+  async getUser(id: string): Promise<User> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
-    return user || undefined;
+    return user;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
@@ -53,9 +53,9 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
-  async getCompany(id: string): Promise<Company | undefined> {
+  async getCompany(id: string): Promise<Company> {
     const [company] = await db.select().from(companies).where(eq(companies.id, id));
-    return company || undefined;
+    return company;
   }
 
   async createCompany(insertCompany: InsertCompany): Promise<Company> {
@@ -89,9 +89,9 @@ export class DatabaseStorage implements IStorage {
     return activity;
   }
 
-  async getCipcFiling(id: string): Promise<CipcFiling | undefined> {
+  async getCipcFiling(id: string): Promise<CipcFiling> {
     const [filing] = await db.select().from(cipcFilings).where(eq(cipcFilings.id, id));
-    return filing || undefined;
+    return filing;
   }
 
   async createCipcFiling(insertFiling: InsertCipcFiling): Promise<CipcFiling> {
@@ -117,12 +117,12 @@ export class DatabaseStorage implements IStorage {
     return alert;
   }
 
-  async getBeneficialOwnershipFiling(companyId: string): Promise<BeneficialOwnershipFiling | undefined> {
+  async getBeneficialOwnershipFiling(companyId: string): Promise<BeneficialOwnershipFiling> {
     const [filing] = await db
       .select()
       .from(beneficialOwnershipFilings)
       .where(eq(beneficialOwnershipFilings.companyId, companyId));
-    return filing || undefined;
+    return filing;
   }
 
   async createBeneficialOwnershipFiling(insertFiling: InsertBeneficialOwnershipFiling): Promise<BeneficialOwnershipFiling> {

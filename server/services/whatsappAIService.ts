@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import { aiOrchestrator } from "./aiOrchestrator";
+import { aiOrchestrator } from "./aiOrchestrator.js";
 
 interface ConversationContext {
   userId: string;

@@ -1,7 +1,7 @@
 import OpenAI from "openai";
 import { GoogleGenAI } from "@google/genai";
-import type { AgentTask, AgentResponse } from "../aiOrchestrator";
-import { complianceCopilotAgent } from "./complianceCopilot"; // Import the new agent
+import type { AgentTask, AgentResponse } from "../aiOrchestrator.js";
+import { complianceCopilotAgent } from "./complianceCopilot.js"; // Import the new agent
 
 export class CipcCommander {
   constructor(private openai: OpenAI, private gemini: GoogleGenAI) {}

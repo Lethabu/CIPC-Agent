@@ -1,4 +1,4 @@
-import multer, { type Request } from 'multer';
+import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import type { Request as ExpressRequest } from 'express';

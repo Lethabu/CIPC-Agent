@@ -1,6 +1,6 @@
-import app from "./app";
-import bo from "./routes/bo";
-import authRoutes from "./routes/auth";
+import app from "./app.js";
+import bo from "./src/routes/bo.js";
+import authRoutes from "./routes/auth.js";
 
 app.use("/api/bo", bo);
 app.use("/api/auth", authRoutes);

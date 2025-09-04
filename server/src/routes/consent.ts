@@ -1,8 +1,10 @@
 import { Router } from "express";
-import { db } from "../db/drizzle";
-import { consentLogs, insertConsentLogSchema } from "../../../shared/schema";
+import { db } from "../db/drizzle.js";
+import { consentLogs, insertConsentLogSchema } from "@shared/schema.js";
+import rateLimit from 'express-rate-limit';
 
 const router = Router();
+router.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 300 }));
 
 router.post("/", async (req, res) => {
   try {
@@ -12,6 +14,7 @@ router.post("/", async (req, res) => {
 
     res.status(201).json({ success: true, data: result[0] });
   } catch (error) {
+    // @ts-ignore
     req.log.error({ err: error }, "Error logging consent");
     res.status(500).json({ success: false, error: "Failed to log consent" });
   }
