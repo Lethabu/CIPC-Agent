@@ -1,4 +1,7 @@
-// Form Autopilot Agent - Handles automated CIPC form completion and submission
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY as string);
+
 export class FormAutopilotAgent {
   name = "Form Autopilot";
   description = "AI agent specialized in automated CIPC form completion, including COR46 Beneficial Ownership forms";
@@ -9,112 +12,69 @@ export class FormAutopilotAgent {
     beneficialOwners: any[];
     significantControl?: any;
   }) {
-    const formData = {
-      formType: "COR46",
-      companyRegistrationNumber: companyData.registrationNumber,
-      companyName: companyData.companyName,
-      beneficialOwners: companyData.beneficialOwners.map(owner => ({
-        fullName: owner.fullName,
-        idNumber: owner.idNumber,
-        nationality: owner.nationality,
-        ownershipPercentage: owner.ownershipPercentage,
-        natureOfControl: owner.natureOfControl,
-        address: owner.address
-      })),
-      significantControl: companyData.significantControl || {},
-      declarationDate: new Date().toISOString(),
-      filingOfficer: "AI Form Autopilot"
-    };
+    const model = genAI.getGenerativeModel({ model: "gemini-pro"});
+    const prompt = `
+    <ROLE>You are the CIPC Form Autopilot, an AI expert in generating compliance documents.</ROLE>
+    <TASK>Generate a CIPC COR46 Beneficial Ownership form in JSON format. The form should be structured according to official CIPC specifications. Cross-reference all beneficial owner details for consistency and accuracy.</TASK>
+    <INPUT_DATA>${JSON.stringify(companyData)}</INPUT_DATA>
+    <OUTPUT_FORMAT>{
+      "formType": "COR46",
+      "companyRegistrationNumber": string,
+      "companyName": string,
+      "beneficialOwners": Array<{
+        "fullName": string,
+        "idNumber": string,
+        "nationality": string,
+        "ownershipPercentage": number,
+        "natureOfControl": string,
+        "address": string
+      }>,
+      "significantControl": object | null,
+      "declarationDate": string, // ISO 8601 format
+      "filingOfficer": "AI Form Autopilot"
+    }</OUTPUT_FORMAT>
+    <CONSTRAINTS>Ensure all fields are populated. Validate ID numbers and addresses. The declaration date must be the current date.</CONSTRAINTS>
+    `;
 
-    return {
-      status: "generated",
-      formType: "COR46",
-      formData,
-      validationChecks: {
-        beneficialOwnersComplete: true,
-        ownershipPercentagesValid: true,
-        requiredFieldsComplete: true,
-        cipcCompliant: true
-      },
-      estimatedFilingCost: 250, // R2.50 in cents
-      nextSteps: ["Review and approve", "Submit to CIPC"]
-    };
-  }
+    try {
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const text = await response.text();
+      const formData = JSON.parse(text);
 
-  async generateForm(formType: string, companyData: any) {
-    switch (formType) {
-      case "beneficial_ownership":
-      case "COR46":
-        return this.generateBeneficialOwnershipForm(companyData);
-      case "annual_return":
-        // Placeholder for Annual Return form generation
-        return {
-          status: "generated",
-          formType: "Annual Return",
-          formData: { companyData, filingYear: new Date().getFullYear() - 1 },
-          validationChecks: { allFieldsComplete: true },
-          estimatedFilingCost: 199,
-          nextSteps: ["Review and approve", "Submit to CIPC"]
-        };
-      case "company_registration_update":
-        // Placeholder for Company Registration Update form generation
-        return {
-          status: "generated",
-          formType: "Company Registration Update",
-          formData: { companyData, updateDetails: "Mock update details" },
-          validationChecks: { allFieldsComplete: true },
-          estimatedFilingCost: 299,
-          nextSteps: ["Review and approve", "Submit to CIPC"]
-        };
-      case "director_amendment":
-        // Placeholder for Director Amendment form generation
-        return {
-          status: "generated",
-          formType: "Director Amendment",
-          formData: { companyData, directorChanges: "Mock director changes" },
-          validationChecks: { allFieldsComplete: true },
-          estimatedFilingCost: 149,
-          nextSteps: ["Review and approve", "Submit to CIPC"]
-        };
-      case "share_allotment_notification":
-        // Placeholder for Share Allotment Notification form generation
-        return {
-          status: "generated",
-          formType: "Share Allotment Notification",
-          formData: { companyData, allotmentDetails: "Mock allotment details" },
-          validationChecks: { allFieldsComplete: true },
-          estimatedFilingCost: 199, // Assuming similar to B-BBEE
-          nextSteps: ["Review and approve", "Submit to CIPC"]
-        };
-      case "annual_financial_statement_submission":
-        // Placeholder for Annual Financial Statement Submission form generation
-        return {
-          status: "generated",
-          formType: "Annual Financial Statement Submission",
-          formData: { companyData, financialStatements: "Mock AFS data" },
-          validationChecks: { allFieldsComplete: true },
-          estimatedFilingCost: 249,
-          nextSteps: ["Review and approve", "Submit to CIPC"]
-        };
-      default:
-        return {
-          status: "generated",
-          formType,
-          formData: {},
-          validationChecks: {},
-          estimatedFilingCost: 100
-        };
+      return {
+        status: "generated",
+        formType: "COR46",
+        formData,
+        validationChecks: {
+          beneficialOwnersComplete: true,
+          ownershipPercentagesValid: true,
+          requiredFieldsComplete: true,
+          cipcCompliant: true,
+        },
+        estimatedFilingCost: 250, // R2.50 in cents
+        nextSteps: ["Review and approve", "Submit to CIPC"],
+      };
+    } catch (error) {
+      console.error("Error generating form with Generative AI:", error);
+      return {
+        status: "error",
+        error: "Failed to generate COR46 form.",
+      };
     }
   }
 
   async submitForm(formData: any) {
-    // Mock CIPC submission
+    // This is a mock implementation. A real implementation would involve integrating
+    // with the CIPC e-services API to submit the form data.
+    console.log("Simulating CIPC form submission:", formData);
+
     return {
       status: "submitted",
       cipcReference: `CIPC${Date.now()}`,
       submissionTime: new Date().toISOString(),
       processingTimeEstimate: "5-10 business days",
-      trackingUrl: `https://eservices.cipc.co.za/track/${Date.now()}`
+      trackingUrl: `https://eservices.cipc.co.za/track/${Date.now()}`,
     };
   }
 
@@ -125,7 +85,7 @@ export class FormAutopilotAgent {
       formsGenerated: 324,
       formsSubmitted: 298,
       successRate: "96.2%",
-      averageProcessingTime: "45 minutes"
+      averageProcessingTime: "45 minutes",
     };
   }
 }

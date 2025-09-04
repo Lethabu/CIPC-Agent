@@ -11,7 +11,8 @@
     "baseUrl": ".",
     "paths": {
       "@shared/*": ["../shared/*"]
-    }
+    },
+    "types": ["jest"]
   },
   "ts-node": {
     "esm": true

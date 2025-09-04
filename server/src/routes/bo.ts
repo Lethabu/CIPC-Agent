@@ -15,7 +15,7 @@ const schema = z.object({
   name: z.string(),
   id: z.string(),
   idNum: z.string(),
-  pct: z.coerce.string(),
+  pct: z.coerce.number(),
 });
 
 router.post('/assist', async (req, res) => {
