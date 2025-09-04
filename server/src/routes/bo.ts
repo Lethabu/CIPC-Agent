@@ -10,7 +10,13 @@ const router = express.Router();
 router.use(popia);
 router.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 300 }));
 
-const schema = z.object({ regNo: z.string(), name: z.string(), id: z.string(), pct: z.number() });
+const schema = z.object({
+  regNo: z.string(),
+  name: z.string(),
+  id: z.string(),
+  idNum: z.string(),
+  pct: z.coerce.string(),
+});
 
 router.post('/assist', async (req, res) => {
   const parsed = schema.safeParse(req.body);
