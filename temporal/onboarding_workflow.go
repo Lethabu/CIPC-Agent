@@ -49,8 +49,8 @@ func OnboardingWorkflow(ctx workflow.Context, phoneNumber string) (string, error
 	// 2. KYC Onboarder (as a child workflow)
 	var kycResult string
 	cwo := workflow.ChildWorkflowOptions{
-		WorkflowID: "kyc-onboarder-" + phoneNumber, // Ensure unique ID
-		WorkflowRunTimeout: time.Minute * 15, // Max time for the whole KYC flow
+		WorkflowID:         "kyc-onboarder-" + phoneNumber, // Ensure unique ID
+		WorkflowRunTimeout: time.Minute * 15,               // Max time for the whole KYC flow
 	}
 	ctx = workflow.WithChildOptions(ctx, cwo)
 	kycChild := workflow.ExecuteChildWorkflow(ctx, KYCOnboarderWorkflow, phoneNumber)

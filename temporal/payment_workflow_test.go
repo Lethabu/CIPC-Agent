@@ -9,7 +9,8 @@ import (
 )
 
 // WebhookWorkflowTestSuite is the test suite for the webhook workflow.
-// It uses the Temporal test suite to mock activities and test workflow logic.	ype WebhookWorkflowTestSuite struct {
+// It uses the Temporal test suite to mock activities and test workflow logic.
+type WebhookWorkflowTestSuite struct {
 	suite.Suite
 	testsuite.WorkflowTestSuite
 

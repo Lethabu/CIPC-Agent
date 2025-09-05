@@ -1,6 +1,26 @@
 version: '3.8'
 
 services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: cipc_agent
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d
+    networks:
+      - cipc-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   # Node.js Server (Frontend)
   node-server:
     build:
@@ -12,8 +32,17 @@ services:
       - TEMPORAL_ADDRESS=temporal:7233
       - NODE_SERVER_URL=http://node-server:${NODE_PORT:-3000}
       - INTERNAL_API_KEY=${INTERNAL_API_KEY}
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/cipc_agent
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - AISENSY_API_KEY=${AISENSY_API_KEY}
+      - PAYFAST_MERCHANT_ID=${PAYFAST_MERCHANT_ID}
+      - PAYFAST_MERCHANT_KEY=${PAYFAST_MERCHANT_KEY}
+      - BASE_URL=${BASE_URL:-http://localhost:3000}
     depends_on:
-      - temporal
+      postgres:
+        condition: service_healthy
+      temporal:
+        condition: service_started
     networks:
       - cipc-network
 
@@ -26,9 +55,14 @@ services:
       - TEMPORAL_ADDRESS=temporal:7233
       - NODE_SERVER_URL=http://node-server:${NODE_PORT:-3000}
       - INTERNAL_API_KEY=${INTERNAL_API_KEY}
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/cipc_agent
     depends_on:
-      - temporal
-      - node-server
+      postgres:
+        condition: service_healthy
+      temporal:
+        condition: service_started
+      node-server:
+        condition: service_started
     networks:
       - cipc-network
 
@@ -37,12 +71,34 @@ services:
     image: temporalio/auto-setup:1.21.0
     ports:
       - "${TEMPORAL_ADDRESS:-localhost:7233}:7233" # gRPC frontend
-      - "${TEMPORal_UI_PORT:-8233}:8233" # Web UI
+      - "${TEMPORAL_UI_PORT:-8233}:8233" # Web UI
     environment:
-      - DB=sqlite3
+      - DB=postgresql
+      - DB_PORT=5432
+      - POSTGRES_USER=postgres
+      - POSTGRES_PWD=password
+      - POSTGRES_SEEDS=postgres
       - TEMPORAL_BROADCAST_ADDRESS=temporal
+    depends_on:
+      postgres:
+        condition: service_healthy
     networks:
       - cipc-network
+
+  # Redis for caching and sessions
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - cipc-network
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  redis_data:
 
 networks:
   cipc-network:

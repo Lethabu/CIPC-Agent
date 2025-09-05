@@ -38,7 +38,7 @@ export class AIOrchestrator {
       const agentTask = await this.cipcCommander.routeTask(userIntent, userData);
       
       // 2. Delegate the actual execution to the appropriate agent
-      return await this.executeAgentTask(agentTask);
+      return await this.executeAgentTask(agentTask, userIntent);
     } catch (error) {
       console.error(`Orchestration failed for intent "${userIntent}":`, error);
       return {
@@ -48,7 +48,7 @@ export class AIOrchestrator {
     }
   }
 
-  private async executeAgentTask(agentTask: AgentTask): Promise<AgentResponse> {
+  private async executeAgentTask(agentTask: AgentTask, userIntent: string): Promise<AgentResponse> {
     try {
       console.log(`Executing task "${agentTask.task}" with agent "${agentTask.agentName}"`);
 
@@ -60,8 +60,12 @@ export class AIOrchestrator {
           return { success: false, error: 'lead_scout agent not fully implemented' };
         
         case 'kyc_onboarder':
-          // Assuming a generic execute method until the agent's interface is confirmed
-          return { success: false, error: 'kyc_onboarder agent not fully implemented' };
+          if (agentTask.task === 'initiate_onboarding') {
+            if (agentTask.data && agentTask.data.userId) {
+              agentResult = await kycOnboarderAgent.initiateOnboarding(agentTask.data.userId, userIntent);
+            }
+          }
+          break;
 
         case 'compliance_copilot':
           if (agentTask.task === 'validate_submission_data') {
@@ -96,19 +100,12 @@ export class AIOrchestrator {
       }
 
       // If a task within an agent is supported but the condition not met (e.g. missing data)
-      if ([
-        'regulation_sentinel', 
-        'compliance_copilot', 
-        'form_autopilot', 
-        'payment_runner'
-      ].includes(agentTask.agentName)) {
-
+      if (['kyc_onboarder', 'regulation_sentinel', 'compliance_copilot', 'form_autopilot', 'payment_runner'].includes(agentTask.agentName)) {
         if (agentResult) {
             return { success: true, data: agentResult };
         } else {
             return { success: false, error: `Invalid data for task "${agentTask.task}" in agent "${agentTask.agentName}"` };
         }
-
       }
       
       // If a task within an agent is not found

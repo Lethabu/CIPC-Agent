@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
 	"log"
 
 	"go.temporal.io/api/enums/v1"
@@ -11,7 +12,14 @@ import (
 )
 
 func main() {
-	c, err := client.Dial(client.Options{})
+	// Initialize client connection
+	clientOptions := client.Options{
+		HostPort:          "eu-west-1.aws.api.temporal.io:7233",
+		Namespace:         "quickstart-cipc-agent-prod.jknwa",
+		ConnectionOptions: client.ConnectionOptions{TLS: &tls.Config{}},
+		Credentials:       client.NewAPIKeyStaticCredentials("eyJhbGciOiJFUzI1NiIsICJraWQiOiJXdnR3YUEifQ.eyJhY2NvdW50X2lkIjoiamtud2EiLCAiYXVkIjpbInRlbXBvcmFsLmlvIl0sICJleHAiOjE4MjAxMTI4MjQsICJpc3MiOiJ0ZW1wb3JhbC5pbyIsICJqdGkiOiIwdVVySUJZcGxTeWNLQW1ZYzJIVDA4cTQxRERObzhwcyIsICJrZXlfaWQiOiIwdVVySUJZcGxTeWNLQW1ZYzJIVDA4cTQxRERObzhwcyIsICJzdWIiOiI3M2NkZGY5Y2JiZjM0ZDBkYjZjNTE0YmQ1ZTMyZDJmNyJ9.V-lou5ue4EOlF4QYIazI6vaptTbIwDwJLRAAL-uDLGppDKxrNV2DpN8SDtd7MvLaaQmK24pVMIpQU0yqak1sDgeyJhbGciOiJFUzI1NiIsICJraWQiOiJXdnR3YUEifQ.eyJhY291bnRfaWQiOiJqam53YSIsICJhdWQiOlsidGVtcG9yYWwuaW8iXSwgImV4cCI6MTgyMDExMjgyNCwgImlzcyI6InRlbXBvcmFsLmlvIiwgImp0aSI6IjB1VXJJQllwbFN5Y0tBbVljMkhUMDhwczIsICJrZXlfaWQiOiIwdVVySUJZcGxTeWNLQW1ZYzJIVDA4cTQxRERObzhwcyIsICJzdWIiOiI3M2NkZGY5Y2JiZjM0ZDBkYjZjNTE0YmQ1ZTMyZDJmNyJ9.V-lou5ue4EOlF4QYIazI6vaptTbIwDwJLRAAL-uDLGppDKxrNV2DpN8SDtd7MvLaaQmK24pVMIpQU0yqak1sDg"),
+	}
+	c, err := client.Dial(clientOptions)
 	if err != nil {
 		log.Fatalln("Unable to create client", err)
 	}

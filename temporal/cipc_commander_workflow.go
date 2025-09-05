@@ -21,7 +21,7 @@ func KYCOnboarderWorkflow(ctx workflow.Context, customerID string) (string, erro
 	// Retry policy for transient failures.
 	ao := workflow.ActivityOptions{
 		StartToCloseTimeout: 10 * time.Second,
-		RetryPolicy: &workflow.RetryPolicy{
+		RetryPolicy: &temporal.RetryPolicy{
 			InitialInterval:    time.Second,
 			BackoffCoefficient: 2.0,
 			MaximumInterval:    time.Minute,
@@ -38,7 +38,7 @@ func KYCOnboarderWorkflow(ctx workflow.Context, customerID string) (string, erro
 	if errors.As(err, &applicationErr) {
 		// This is a permanent failure. Escalate to a human.
 		var manualTaskResult string
-		manualTaskAo := workflow.ActivityOptions{
+		manualTaskAo := workflow.A         ctivityOptions{
 			StartToCloseTimeout: 5 * time.Minute,
 		}
 		manualTaskCtx := workflow.WithActivityOptions(ctx, manualTaskAo)
