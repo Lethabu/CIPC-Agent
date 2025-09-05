@@ -1,4 +1,4 @@
-import { db } from '../../db/index.js';
+import { db } from '../../src/db/index.js';
 import { leadScoutResults } from '../../../shared/schema.js';
 import OpenAI from 'openai';
 

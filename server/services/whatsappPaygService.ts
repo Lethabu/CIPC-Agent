@@ -1,5 +1,5 @@
-import { db } from '../src/db';
-import { users, paygTransactions, pricingConfig } from '../../shared/schema';
+import { db } from '../src/db/index.js';
+import { users, paygTransactions, pricingConfig } from '../../shared/schema.js';
 import { eq } from 'drizzle-orm';
 
 export class WhatsAppPaygService {
