@@ -1,7 +1,27 @@
 // KYC Onboarder Agent - Handles client verification and onboarding
+import { startOnboardingWorkflow } from '../temporal.js';
+
 export class KYCOnboarderAgent {
   name = "KYC Onboarder";
   description = "AI agent specialized in customer verification and POPIA-compliant onboarding for CIPC services";
+
+  async initiateOnboarding(phoneNumber: string, initialMessage: string) {
+    try {
+      const workflowId = await startOnboardingWorkflow(phoneNumber, initialMessage);
+      console.log(`Successfully started onboarding workflow with ID: ${workflowId}`);
+      return {
+        success: true,
+        workflowId: workflowId,
+        message: `Onboarding process started for ${phoneNumber}.`,
+      };
+    } catch (error) {
+      console.error(`Failed to start onboarding workflow for ${phoneNumber}:`, error);
+      return {
+        success: false,
+        error: "Failed to initiate onboarding workflow.",
+      };
+    }
+  }
 
   async verifyCustomer(customerData: {
     idNumber?: string;
@@ -25,19 +45,6 @@ export class KYCOnboarderAgent {
         "Certified ID copies of all directors",
         "Proof of address",
         "Bank statements (3 months)"
-      ]
-    };
-  }
-
-  async processOnboarding(documents: any[]) {
-    return {
-      status: "completed",
-      documentsProcessed: documents.length,
-      complianceStatus: "compliant",
-      nextSteps: [
-        "Set up WhatsApp notifications",
-        "Configure compliance alerts",
-        "Schedule first beneficial ownership review"
       ]
     };
   }

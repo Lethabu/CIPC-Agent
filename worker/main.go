@@ -34,7 +34,6 @@ type PaymentVerificationRequest struct {
 	PaymentID string `json:"paymentId"`
 }
 
-
 // Global Temporal client to be used by the HTTP handler
 var temporalClient client.Client
 
@@ -231,7 +230,6 @@ func processWebhookHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(result)
 }
 
-
 func main() {
 	var err error
 	temporalClient, err = client.Dial(client.Options{
@@ -269,7 +267,7 @@ func main() {
 	w.RegisterActivity(temporal.RequestOTPActivity) // <-- New activity registered
 	w.RegisterActivity(temporal.SubmitFilingToCIPCActivity)
 	w.RegisterActivity(temporal.SendWhatsAppConfirmationActivity)
-	
+
 	// Register Payment Workflows & Activities
 	w.RegisterWorkflow(temporal.CreatePayFastPaymentWorkflow)
 	w.RegisterWorkflow(temporal.CreatePayStackPaymentWorkflow)
@@ -281,7 +279,6 @@ func main() {
 	w.RegisterActivity(temporal.CreateYocoPaymentActivity)
 	w.RegisterActivity(temporal.VerifyPaymentActivity)
 	w.RegisterActivity(temporal.ProcessWebhookActivity)
-
 
 	// Register Payment Recovery Workflow
 	w.RegisterWorkflow(temporal.PaymentRecoveryWorkflow)

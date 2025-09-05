@@ -7,9 +7,18 @@ import { popia } from "./middleware/popia.js";
 import boRouter from './routes/bo.js';
 import consentRouter from './routes/consent.js';
 import aisensyWebhookRouter from './webhooks/aisensy.js';
+import whatsappRouter from '../routes/whatsapp.js';
+import sprintRouter from '../routes/sprint.js';
+import { checkDatabaseHealth } from './db/index.js';
+import { LeadScoutAgent } from '../services/agents/leadScoutAgent.js';
+import { DeadlineSentinelAgent } from '../services/agents/deadlineSentinelAgent.js';
 
 const app = express();
 const logger = pino({ level: process.env.NODE_ENV === "production" ? "info" : "debug" });
+
+// Initialize agents
+const leadScout = new LeadScoutAgent();
+const sentinelAgent = new DeadlineSentinelAgent();
 
 app.use(pinoHttp({ logger }));
 app.use(helmet());
@@ -27,7 +36,30 @@ app.use(popia);
 // API Routes
 app.use('/api/bo', boRouter);
 app.use('/api/consent', consentRouter);
+app.use('/api/whatsapp', whatsappRouter);
+app.use('/api/sprint', sprintRouter);
 
-app.get("/healthz", (_req, res) => res.json({ ok: true }));
+// Health check with database status
+app.get("/healthz", async (_req, res) => {
+  const dbHealth = await checkDatabaseHealth();
+  res.json({ 
+    ok: true, 
+    database: dbHealth.healthy,
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Start background agents
+if (process.env.NODE_ENV !== 'test') {
+  // Run lead scout every 4 hours
+  setInterval(() => {
+    leadScout.scoutLeads().catch(console.error);
+  }, 4 * 60 * 60 * 1000);
+  
+  // Check deadlines every hour
+  setInterval(() => {
+    sentinelAgent.checkUpcomingDeadlines().catch(console.error);
+  }, 60 * 60 * 1000);
+}
 
 export default app;

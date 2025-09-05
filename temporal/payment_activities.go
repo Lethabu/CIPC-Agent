@@ -48,12 +48,12 @@ type PayFastPaymentResponse struct {
 
 // PayStackPaymentRequest defines the structure for a payment request to PayStack.
 type PayStackPaymentRequest struct {
-	Email    string                 `json:"email"`
-	Amount   int                    `json:"amount"` // in kobo
-	Currency string                 `json:"currency"`
+	Email     string                 `json:"email"`
+	Amount    int                    `json:"amount"` // in kobo
+	Currency  string                 `json:"currency"`
 	Reference string                 `json:"reference"`
-	Callback string                 `json:"callback_url"`
-	Metadata map[string]interface{} `json:"metadata"`
+	Callback  string                 `json:"callback_url"`
+	Metadata  map[string]interface{} `json:"metadata"`
 }
 
 // PayStackPaymentResponse defines the structure for a payment response from PayStack.
@@ -117,7 +117,6 @@ type WebhookProcessingResponse struct {
 	Message string `json:"message,omitempty"`
 }
 
-
 // generatePayFastSignature creates an MD5 hash for the payment request as required by PayFast.
 func generatePayFastSignature(data url.Values, passphrase string) string {
 	// PayFast requires the parameters to be sorted by key.
@@ -152,7 +151,7 @@ func CreatePayFastPaymentActivity(ctx context.Context, request PayFastPaymentReq
 	// Convert the struct to URL-encoded values.
 	paymentData := url.Values{
 		"merchant_id":      {request.MerchantID},
-		"merchant_key":       {request.MerchantKey},
+		"merchant_key":     {request.MerchantKey},
 		"return_url":       {request.ReturnURL},
 		"cancel_url":       {request.CancelURL},
 		"notify_url":       {request.NotifyURL},
@@ -179,7 +178,6 @@ func CreatePayFastPaymentActivity(ctx context.Context, request PayFastPaymentReq
 		Provider:    "payfast",
 	}, nil
 }
-
 
 // CreatePayStackPaymentActivity is a Temporal activity that creates a payment link for PayStack.
 func CreatePayStackPaymentActivity(ctx context.Context, request PayStackPaymentRequest, secretKey string) (*PayStackPaymentResponse, error) {
@@ -297,7 +295,6 @@ func getSecretKey(provider string) string {
 	}
 	return secrets[provider]
 }
-
 
 // VerifyPaymentActivity is a Temporal activity that verifies a payment with the specified provider.
 func VerifyPaymentActivity(ctx context.Context, request PaymentVerificationRequest) (*PaymentVerificationResponse, error) {

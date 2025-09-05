@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CIPC Agent - Sprint Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">🚀 CIPC Agent Sprint Dashboard</h1>
+            <p class="text-gray-600">72-Hour Launch Progress</p>
+        </div>
+
+        <!-- Sprint Progress -->
+        <div class="grid md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-lg shadow">
+                <div class="text-2xl font-bold text-green-600" id="totalUsers">-</div>
+                <div class="text-sm text-gray-600">Total Users</div>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow">
+                <div class="text-2xl font-bold text-blue-600" id="serviceRequests">-</div>
+                <div class="text-sm text-gray-600">Service Requests</div>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow">
+                <div class="text-2xl font-bold text-green-600" id="conversions">-</div>
+                <div class="text-sm text-gray-600">Conversions</div>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow">
+                <div class="text-2xl font-bold text-blue-600" id="revenue">R-</div>
+                <div class="text-sm text-gray-600">Revenue</div>
+            </div>
+        </div>
+
+        <!-- Sprint Goals -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-xl font-bold mb-4">Sprint Goals Progress</h2>
+            <div class="space-y-4">
+                <div>
+                    <div class="flex justify-between mb-1">
+                        <span class="text-sm font-medium">Day 1: Live Funnel</span>
+                        <span class="text-sm text-green-600">✅ Complete</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-green-600 h-2 rounded-full" style="width: 100%"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex justify-between mb-1">
+                        <span class="text-sm font-medium">Day 2: First Filings</span>
+                        <span class="text-sm text-yellow-600" id="day2Status">🔄 In Progress</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-yellow-500 h-2 rounded-full" id="day2Progress" style="width: 60%"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex justify-between mb-1">
+                        <span class="text-sm font-medium">Day 3: 10 Paying Customers</span>
+                        <span class="text-sm text-gray-600" id="day3Status">⏳ Pending</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-gray-400 h-2 rounded-full" id="day3Progress" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Commands -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-xl font-bold mb-4">Quick Test Commands</h2>
+            <div class="space-y-2 text-sm font-mono bg-gray-100 p-4 rounded">
+                <div>curl -X POST http://localhost:3000/api/sprint/webhook -H "Content-Type: application/json" -d '{"from": "+27123456789", "message": "hi", "type": "text"}'</div>
+                <div>curl -X POST http://localhost:3000/api/sprint/webhook -H "Content-Type: application/json" -d '{"from": "+27123456789", "message": "score", "type": "text"}'</div>
+                <div>curl -X POST http://localhost:3000/api/sprint/webhook -H "Content-Type: application/json" -d '{"from": "+27123456789", "message": "AR", "type": "text"}'</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function loadDashboard() {
+            try {
+                const response = await fetch('/api/sprint/dashboard');
+                const data = await response.json();
+                
+                document.getElementById('totalUsers').textContent = data.uniqueUsers || 0;
+                document.getElementById('serviceRequests').textContent = data.serviceRequests || 0;
+                document.getElementById('conversions').textContent = data.conversions || 0;
+                document.getElementById('revenue').textContent = `R${data.revenue || 0}`;
+                
+                const conversions = data.conversions || 0;
+                if (conversions >= 1) {
+                    document.getElementById('day2Status').innerHTML = '✅ Complete';
+                    document.getElementById('day2Progress').style.width = '100%';
+                    document.getElementById('day2Progress').className = 'bg-green-600 h-2 rounded-full';
+                }
+                
+                if (conversions >= 10) {
+                    document.getElementById('day3Status').innerHTML = '✅ Complete';
+                    document.getElementById('day3Progress').style.width = '100%';
+                    document.getElementById('day3Progress').className = 'bg-green-600 h-2 rounded-full';
+                } else if (conversions > 0) {
+                    document.getElementById('day3Status').innerHTML = `🔄 ${conversions}/10`;
+                    document.getElementById('day3Progress').style.width = `${(conversions/10)*100}%`;
+                    document.getElementById('day3Progress').className = 'bg-blue-500 h-2 rounded-full';
+                }
+                
+            } catch (error) {
+                console.error('Failed to load dashboard:', error);
+            }
+        }
+        
+        loadDashboard();
+        setInterval(loadDashboard, 30000);
+    </script>
+</body>
+</html>

@@ -1,8 +1,11 @@
 package temporal
 
 import (
+	"context"
+	"fmt"
 	"time"
 
+	"go.temporal.io/sdk/activity"
 	"go.temporal.io/sdk/workflow"
 )
 
@@ -20,4 +23,12 @@ func ComplianceCheckWorkflow(ctx workflow.Context, regNum string) (string, error
 	}
 
 	return result, nil
+}
+
+func PerformComplianceCheckActivity(ctx context.Context, regNum string) (string, error) {
+	logger := activity.GetLogger(ctx)
+	logger.Info("Performing compliance check for registration number", "regNum", regNum)
+	// In a real implementation, this would check the compliance status of the company.
+	time.Sleep(2 * time.Second)
+	return fmt.Sprintf("Compliance check passed for %s", regNum), nil
 }

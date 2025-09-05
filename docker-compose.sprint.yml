@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  # Sprint Node.js Server (Minimal for 72h launch)
+  sprint-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.node
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/cipc_agent
+      - AISENSY_API_KEY=${AISENSY_API_KEY}
+      - INTERNAL_API_KEY=${INTERNAL_API_KEY}
+      - BASE_URL=${BASE_URL:-http://localhost:3000}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - sprint-network
+    volumes:
+      - ./server:/app/server
+      - ./shared:/app/shared
+
+  # PostgreSQL (Lightweight for sprint)
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: cipc_agent
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - sprint_db:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d
+    networks:
+      - sprint-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+
+  # Sprint Dashboard (Simple monitoring)
+  sprint-dashboard:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./sprint-dashboard:/usr/share/nginx/html
+    networks:
+      - sprint-network
+
+volumes:
+  sprint_db:
+
+networks:
+  sprint-network:
+    driver: bridge

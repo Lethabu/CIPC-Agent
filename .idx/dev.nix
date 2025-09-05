@@ -4,5 +4,6 @@
   packages = [
     pkgs.go_1_22
     pkgs.nodejs_20
+    pkgs.docker-compose
   ];
 }

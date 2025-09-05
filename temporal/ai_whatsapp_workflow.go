@@ -41,7 +41,7 @@ func AIWhatsAppWorkflow(ctx workflow.Context, phoneNumber string, message string
 func CallAIActivity(ctx context.Context, message string) (string, error) {
 	logger := activity.GetLogger(ctx)
 	logger.Info("Calling AI orchestrator with message", "message", message)
-	
+
 	// Simulate a call to the AI, which might involve some processing time.
 	// In a real implementation, you would replace this with an HTTP call to your aiOrchestrator.
 	// For now, we will just echo the message back.
