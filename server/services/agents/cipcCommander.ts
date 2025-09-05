@@ -1,12 +1,13 @@
-import OpenAI from "openai";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import type { AgentTask, AgentResponse } from "../aiOrchestrator.js";
 import { complianceCopilotAgent } from "./complianceCopilot.js"; // Import the new agent
 
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY as string);
+
 export class CipcCommander {
-  constructor(private openai: OpenAI, private gemini: GoogleGenerativeAI) {}
 
   async routeTask(userIntent: string, userData?: any): Promise<AgentTask> {
+    const model = genAI.getGenerativeModel({ model: "gemini-pro"});
     const prompt = `
     <ROLE>You are the CIPC Compliance Orchestrator for South African SMMEs</ROLE>
     <TASK>Delegate tasks based on user intent: 
@@ -23,28 +24,16 @@ export class CipcCommander {
     `;
 
     try {
-      const response = await this.openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "system",
-            content: prompt
-          },
-          {
-            role: "user", 
-            content: userIntent
-          }
-        ],
-        response_format: { type: "json_object" }
-      });
-
-      const result = JSON.parse(response.choices[0].message.content || "{}");
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const text = await response.text();
+      const task = JSON.parse(text) as { agent_name: string, task: string, priority: "high"|"medium"|"low", data?: any };
       
       return {
-        agentName: result.agent_name || "cipc_commander",
-        task: result.task || userIntent,
-        priority: result.priority || "medium",
-        data: { ...result.data, ...userData }
+        agentName: task.agent_name || "cipc_commander",
+        task: task.task || userIntent,
+        priority: task.priority || "medium",
+        data: { ...task.data, ...userData }
       };
     } catch (error) {
       // Fallback routing
@@ -58,6 +47,7 @@ export class CipcCommander {
   }
 
   async execute(task: string, data?: any): Promise<AgentResponse> {
+    const model = genAI.getGenerativeModel({ model: "gemini-pro"});
     const prompt = `
     You are the CIPC Commander, helping South African SMMEs with compliance.
     
@@ -69,24 +59,14 @@ export class CipcCommander {
     `;
 
     try {
-      const response = await this.openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "system",
-            content: "You are a helpful CIPC compliance expert for South African SMMEs. Be professional yet conversational."
-          },
-          {
-            role: "user",
-            content: prompt
-          }
-        ]
-      });
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const text = await response.text();
 
       return {
         success: true,
         data: {
-          response: response.choices[0].message.content,
+          response: text,
           agent: "CIPC Commander"
         }
       };
