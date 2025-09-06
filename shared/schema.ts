@@ -90,8 +90,56 @@ export const insertPaygTransactionSchema = createInsertSchema(paygTransactions);
 export const insertComplianceDeadlineSchema = createInsertSchema(complianceDeadlines);
 export const insertLeadScoutResultSchema = createInsertSchema(leadScoutResults);
 
+// Partners table
+export const partners = pgTable('partners', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  name: text('name').notNull(),
+  email: text('email').notNull().unique(),
+  phone: text('phone'),
+  type: text('type', { enum: ['referral', 'reseller', 'enterprise'] }).notNull(),
+  companyName: text('company_name'),
+  referralCode: text('referral_code').notNull().unique(),
+  apiKey: text('api_key').notNull().unique(),
+  commissionRate: decimal('commission_rate', { precision: 5, scale: 2 }).default('20.00'),
+  status: text('status', { enum: ['pending', 'active', 'suspended'] }).default('pending'),
+  totalReferrals: integer('total_referrals').default(0),
+  totalCommission: decimal('total_commission', { precision: 10, scale: 2 }).default('0'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+// Partner referrals
+export const partnerReferrals = pgTable('partner_referrals', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  partnerId: uuid('partner_id').references(() => partners.id).notNull(),
+  customerId: uuid('customer_id').references(() => users.id).notNull(),
+  transactionId: uuid('transaction_id').references(() => paygTransactions.id),
+  commissionAmount: decimal('commission_amount', { precision: 10, scale: 2 }).notNull(),
+  status: text('status', { enum: ['pending', 'paid', 'cancelled'] }).default('pending'),
+  createdAt: timestamp('created_at').defaultNow(),
+  paidAt: timestamp('paid_at'),
+});
+
+// Subscriptions
+export const subscriptions = pgTable('subscriptions', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').references(() => users.id).notNull(),
+  tierId: text('tier_id', { enum: ['growth', 'enterprise'] }).notNull(),
+  status: text('status', { enum: ['pending', 'active', 'cancelled', 'expired'] }).default('pending'),
+  paymentReference: text('payment_reference'),
+  startDate: timestamp('start_date'),
+  endDate: timestamp('end_date'),
+  autoRenew: boolean('auto_renew').default(true),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
 export type User = z.infer<typeof selectUserSchema>;
 export type NewUser = z.infer<typeof insertUserSchema>;
 export type PaygTransaction = z.infer<typeof insertPaygTransactionSchema>;
 export type ComplianceDeadline = z.infer<typeof insertComplianceDeadlineSchema>;
 export type LeadScoutResult = z.infer<typeof insertLeadScoutResultSchema>;
+export type Partner = typeof partners.$inferSelect;
+export type NewPartner = typeof partners.$inferInsert;
+export type PartnerReferral = typeof partnerReferrals.$inferSelect;
+export type Subscription = typeof subscriptions.$inferSelect;
