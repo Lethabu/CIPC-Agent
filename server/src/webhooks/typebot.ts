@@ -9,7 +9,7 @@ router.post(
     try {
       res.status(200).json({ ok: true, message: 'Event processed successfully.' });
     } catch (error) {
-      console.error({ err: error }, 'Error processing Aisensy webhook in the main handler.');
+      console.error({ err: error }, 'Error processing Typebot webhook in the main handler.');
       res.status(500).send('An unexpected error occurred.');
     }
   }

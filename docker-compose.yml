@@ -70,7 +70,7 @@ services:
   temporal:
     image: temporalio/auto-setup:1.21.0
     ports:
-      - "${TEMPORAL_ADDRESS:-localhost:7233}:7233" # gRPC frontend
+      - "${TEMPORAL_ADDRESS:-127.0.0.1:7233}:7233" # gRPC frontend
       - "${TEMPORAL_UI_PORT:-8233}:8233" # Web UI
     environment:
       - DB=postgresql

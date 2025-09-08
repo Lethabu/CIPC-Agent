@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
+    "module": "commonjs",
+    "moduleResolution": "node",
     "target": "ESNext",
     "strict": true,
     "esModuleInterop": true,
@@ -12,11 +12,13 @@
     "paths": {
       "@shared/*": ["../shared/*"]
     },
-    "types": ["jest"]
+    "types": ["jest", "node"],
+    "resolveJsonModule": true
   },
   "ts-node": {
-    "esm": true
+    "esm": true,
+    "transpileOnly": true
   },
-  "include": ["src/**/*.ts", "services/**/*.ts", "routes/**/*.ts", "app.ts"],
+  "include": ["src/**/*.ts", "middleware/**/*.ts", "utils/**/*.ts", "*.ts"],
   "exclude": ["node_modules"]
 }
