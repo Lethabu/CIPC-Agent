@@ -1,12 +1,17 @@
 import { 
   users, companies, documents, agentActivities, cipcFilings, complianceAlerts, beneficialOwnershipFilings,
-  type User, type InsertUser, type Company, type InsertCompany, 
+  insertUserSchema, type User, type Company, type InsertCompany, 
   type Document, type InsertDocument, type AgentActivity, type InsertAgentActivity,
   type CipcFiling, type InsertCipcFiling, type ComplianceAlert, type InsertComplianceAlert,
   type BeneficialOwnershipFiling, type InsertBeneficialOwnershipFiling
 } from "../shared/schema.js";
 import { db } from "./db.js";
 import { eq } from "drizzle-orm";
+
+import { z } from "zod";
+
+type InsertUser = z.infer<typeof insertUserSchema>;
+type Json = any;
 
 // Interface for storage operations
 export interface IStorage {

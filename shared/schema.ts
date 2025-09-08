@@ -23,6 +23,68 @@ export const users = pgTable('users', {
   companyIdx: index('company_idx').on(table.companyRegNumber),
 }));
 
+// Companies table
+export const companies = pgTable('companies', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').references(() => users.id).notNull(),
+  name: text('name').notNull(),
+  registrationNumber: text('registration_number').notNull().unique(),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+// Documents table
+export const documents = pgTable('documents', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').references(() => users.id).notNull(),
+  companyId: uuid('company_id').references(() => companies.id).notNull(),
+  documentType: text('document_type', { enum: ['id_copy', 'proof_of_address', 'cipc_certificate', 'other'] }).notNull(),
+  s3Key: text('s3_key').notNull().unique(),
+  fileName: text('file_name').notNull(),
+  uploadedAt: timestamp('uploaded_at').defaultNow(),
+});
+
+// Agent Activities table
+export const agentActivities = pgTable('agent_activities', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  companyId: uuid('company_id').references(() => companies.id).notNull(),
+  activityType: text('activity_type', { enum: ['filing', 'amendment', 'query', 'other'] }).notNull(),
+  description: text('description').notNull(),
+  performedBy: text('performed_by').notNull(),
+  performedAt: timestamp('performed_at').defaultNow(),
+});
+
+// CIPC Filings table
+export const cipcFilings = pgTable('cipc_filings', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  companyId: uuid('company_id').references(() => companies.id).notNull(),
+  filingType: text('filing_type', { enum: ['annual_return', 'director_amendment', 'beneficial_ownership'] }).notNull(),
+  status: text('status', { enum: ['pending', 'submitted', 'approved', 'rejected'] }).default('pending'),
+  submissionDate: timestamp('submission_date').defaultNow(),
+  cipcReference: text('cipc_reference'),
+});
+
+// Compliance Alerts table
+export const complianceAlerts = pgTable('compliance_alerts', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  companyId: uuid('company_id').references(() => companies.id).notNull(),
+  alertType: text('alert_type', { enum: ['deadline_reminder', 'document_missing', 'compliance_risk'] }).notNull(),
+  message: text('message').notNull(),
+  severity: text('severity', { enum: ['low', 'medium', 'high'] }).default('medium'),
+  createdAt: timestamp('created_at').defaultNow(),
+  resolvedAt: timestamp('resolved_at'),
+});
+
+// Beneficial Ownership Filings table
+export const beneficialOwnershipFilings = pgTable('beneficial_ownership_filings', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  companyId: uuid('company_id').references(() => companies.id).notNull(),
+  status: text('status', { enum: ['pending', 'submitted', 'approved', 'rejected'] }).default('pending'),
+  submissionDate: timestamp('submission_date').defaultNow(),
+  lastUpdated: timestamp('last_updated').defaultNow(),
+  beneficiariesData: jsonb('beneficiaries_data') as any,
+});
+
 // PAYG Transactions
 export const paygTransactions = pgTable('payg_transactions', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -90,6 +152,20 @@ export const insertPaygTransactionSchema = createInsertSchema(paygTransactions);
 export const insertComplianceDeadlineSchema = createInsertSchema(complianceDeadlines);
 export const insertLeadScoutResultSchema = createInsertSchema(leadScoutResults);
 
+// New schemas for the added tables
+export const insertCompanySchema = createInsertSchema(companies);
+export const selectCompanySchema = createSelectSchema(companies);
+export const insertDocumentSchema = createInsertSchema(documents);
+export const selectDocumentSchema = createSelectSchema(documents);
+export const insertAgentActivitySchema = createInsertSchema(agentActivities);
+export const selectAgentActivitySchema = createSelectSchema(agentActivities);
+export const insertCipcFilingSchema = createInsertSchema(cipcFilings);
+export const selectCipcFilingSchema = createSelectSchema(cipcFilings);
+export const insertComplianceAlertSchema = createInsertSchema(complianceAlerts);
+export const selectComplianceAlertSchema = createSelectSchema(complianceAlerts);
+export const insertBeneficialOwnershipFilingSchema = createInsertSchema(beneficialOwnershipFilings);
+export const selectBeneficialOwnershipFilingSchema = createSelectSchema(beneficialOwnershipFilings);
+
 // Partners table
 export const partners = pgTable('partners', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -143,3 +219,17 @@ export type Partner = typeof partners.$inferSelect;
 export type NewPartner = typeof partners.$inferInsert;
 export type PartnerReferral = typeof partnerReferrals.$inferSelect;
 export type Subscription = typeof subscriptions.$inferSelect;
+
+// New types for the added tables
+export type Company = z.infer<typeof selectCompanySchema>;
+export type InsertCompany = z.infer<typeof insertCompanySchema>;
+export type Document = z.infer<typeof selectDocumentSchema>;
+export type InsertDocument = z.infer<typeof insertDocumentSchema>;
+export type AgentActivity = z.infer<typeof selectAgentActivitySchema>;
+export type InsertAgentActivity = z.infer<typeof insertAgentActivitySchema>;
+export type CipcFiling = z.infer<typeof selectCipcFilingSchema>;
+export type InsertCipcFiling = z.infer<typeof insertCipcFilingSchema>;
+export type ComplianceAlert = z.infer<typeof selectComplianceAlertSchema>;
+export type InsertComplianceAlert = z.infer<typeof insertComplianceAlertSchema>;
+export type BeneficialOwnershipFiling = z.infer<typeof selectBeneficialOwnershipFilingSchema>;
+export type InsertBeneficialOwnershipFiling = z.infer<typeof insertBeneficialOwnershipFilingSchema>;

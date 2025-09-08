@@ -1,0 +1,147 @@
+version: '3.8'
+
+services:
+  # TYPEBOT BUILDER - Visual Flow Designer
+  typebot-builder:
+    image: baptistearno/typebot-builder:latest
+    ports:
+      - "3001:3000"
+    environment:
+      - DATABASE_URL=postgresql://typebot:password@postgres:5432/typebot
+      - ENCRYPTION_SECRET=${TYPEBOT_ENCRYPTION_SECRET}
+      - NEXTAUTH_URL=https://builder.cipcagent.co.za
+      - NEXT_PUBLIC_VIEWER_URL=https://chat.cipcagent.co.za
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
+      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
+    volumes:
+      - typebot_data:/app/data
+    networks:
+      - cipc-network
+    depends_on:
+      - postgres
+      - redis
+
+  # TYPEBOT VIEWER - Customer-Facing Chat
+  typebot-viewer:
+    image: baptistearno/typebot-viewer:latest
+    ports:
+      - "3002:3000"
+    environment:
+      - DATABASE_URL=postgresql://typebot:password@postgres:5432/typebot
+      - ENCRYPTION_SECRET=${TYPEBOT_ENCRYPTION_SECRET}
+      - NEXT_PUBLIC_VIEWER_URL=https://chat.cipcagent.co.za
+    networks:
+      - cipc-network
+    depends_on:
+      - postgres
+      - typebot-builder
+
+  # WHATSAPP BUSINESS API BRIDGE
+  whatsapp-bridge:
+    build:
+      context: ./whatsapp-bridge
+      dockerfile: Dockerfile
+    ports:
+      - "3003:3000"
+    environment:
+      - TYPEBOT_VIEWER_URL=http://typebot-viewer:3000
+      - WHATSAPP_BUSINESS_ID=${WHATSAPP_BUSINESS_ID}
+      - WHATSAPP_ACCESS_TOKEN=${WHATSAPP_ACCESS_TOKEN}
+      - WHATSAPP_PHONE_NUMBER_ID=${WHATSAPP_PHONE_NUMBER_ID}
+      - WEBHOOK_VERIFY_TOKEN=${WEBHOOK_VERIFY_TOKEN}
+      - REDIS_URL=redis://redis:6379
+    networks:
+      - cipc-network
+    depends_on:
+      - redis
+      - typebot-viewer
+
+  # AI ORCHESTRATOR - Gemini Integration
+  ai-orchestrator:
+    build:
+      context: ./ai-orchestrator
+      dockerfile: Dockerfile
+    ports:
+      - "3004:3000"
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - TYPEBOT_BUILDER_URL=http://typebot-builder:3000
+      - CIPC_API_ENDPOINT=${CIPC_API_ENDPOINT}
+      - POPIA_COMPLIANCE_MODE=true
+      - AUDIT_LOG_LEVEL=detailed
+    networks:
+      - cipc-network
+    depends_on:
+      - typebot-builder
+
+  # ANALYTICS ENGINE - Real-time Insights
+  analytics-engine:
+    build:
+      context: ./analytics-engine
+      dockerfile: Dockerfile
+    ports:
+      - "3005:3000"
+    environment:
+      - CLICKHOUSE_URL=http://clickhouse:8123
+      - REDIS_URL=redis://redis:6379
+      - METRICS_RETENTION_DAYS=90
+      - REAL_TIME_ALERTS=true
+    networks:
+      - cipc-network
+    depends_on:
+      - clickhouse
+      - redis
+
+  # CLICKHOUSE - Advanced Analytics Database
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+    networks:
+      - cipc-network
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+
+  # REDIS - Session Management & Caching
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    networks:
+      - cipc-network
+
+  # POSTGRES - Multi-tenant Database
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_MULTIPLE_DATABASES: "cipc_agent,typebot,analytics"
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/create-multiple-postgresql-databases.sh:/docker-entrypoint-initdb.d/create-multiple-postgresql-databases.sh
+    networks:
+      - cipc-network
+
+volumes:
+  typebot_data:
+  clickhouse_data:
+  redis_data:
+  postgres_data:
+
+networks:
+  cipc-network:
+    driver: bridge
