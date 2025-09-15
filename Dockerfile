@@ -1,42 +1,33 @@
-# Use a multi-stage build to create a lean final image
+# Stage 1: Build
+FROM python:3.9-slim as builder
 
-# 1. Builder Stage: Compile TypeScript to JavaScript
-FROM node:18-alpine AS builder
 WORKDIR /app
 
-# Copy all package.json and lock files
-COPY package.json package-lock.json* ./
+# Create a non-root user
+RUN useradd -ms /bin/bash appuser
 
-# Copy project-specific package files
-COPY client/package.json ./client/
-COPY server/package.json ./server/
+# Copy requirements and install dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Install all dependencies
-RUN npm install
+# Stage 2: Final image
+FROM python:3.9-slim
 
-# Copy the rest of the source code
-COPY . .
-
-# Compile the TypeScript server code
-RUN cd server && npm install && ../node_modules/.bin/tsc
-
-# 2. Production Stage: Create the final, lightweight image
-FROM node:18-alpine
 WORKDIR /app
 
-# Create a non-root user for security
-RUN addgroup -S app && adduser -S app -G app
-USER app
+# Create a non-root user
+RUN useradd -ms /bin/bash appuser
 
-# Copy compiled code and production dependencies from the builder stage
-COPY --from=builder /app/server/dist ./server/dist
-COPY --from=builder /app/package.json ./
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/server/package.json ./server/
-COPY --from=builder /app/server/index.js ./server/
+# Copy installed packages from builder stage
+COPY --from=builder /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
+COPY --from=builder /usr/local/bin/ /usr/local/bin/
 
-# Expose the application port
-EXPOSE 3000
+# Copy the application
+COPY CIPC_Agent.py .
 
-# Set the command to run the application
-CMD ["node", "server/dist/index.js"]
+# Switch to non-root user
+USER appuser
+
+# Expose port and run the application
+EXPOSE 8501
+CMD ["streamlit", "run", "CIPC_Agent.py"]

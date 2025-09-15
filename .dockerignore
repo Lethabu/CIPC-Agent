@@ -1,10 +1,16 @@
-node_modules
-npm-debug.log
-.git
-.gitignore
-README.md
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Environments
 .env
-.nyc_output
-coverage
-.DS_Store
-*.log
+.venv
+venv/
+env/
+
+# IDEs
+.idea/
+.vscode/
