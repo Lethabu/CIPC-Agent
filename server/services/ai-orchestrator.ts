@@ -6,6 +6,7 @@ import { TypebotOrchestrator } from './typebot-orchestrator';
 import { RealtimeAIOptimizer } from './realtime-ai-optimizer';
 import { EmotionAI } from './emotion-ai';
 import { PredictiveComplianceEngine } from './predictive-compliance-engine';
+import { AppConfig } from '../config';
 
 export class AIOrchestrator {
   private gemini: GoogleGenerativeAI;
@@ -17,11 +18,11 @@ export class AIOrchestrator {
   private emotionAI!: EmotionAI;
   private predictiveEngine!: PredictiveComplianceEngine;
 
-  constructor() {
-    this.gemini = new GoogleGenerativeAI(process.env.GEMINI_API_KEY as string);
-    this.openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY as string });
-    this.redis = new Redis(process.env.REDIS_URL as string);
-    this.typebot = new TypebotOrchestrator(); // Assuming TypebotOrchestrator is already defined or will be
+  constructor(private config: AppConfig) {
+    this.gemini = new GoogleGenerativeAI(config.gemini.apiKey);
+    this.openai = new OpenAI({ apiKey: config.openai.apiKey });
+    this.redis = new Redis(config.redis.url);
+    this.typebot = new TypebotOrchestrator(config); // Assuming TypebotOrchestrator is already defined or will be
     
     this.mlModels = new Map<string, any>();
     this.initializeAIEngines();

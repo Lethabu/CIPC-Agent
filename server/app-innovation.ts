@@ -1,10 +1,14 @@
 import express from 'express';
+import pino from 'pino';
+import { config } from './config';
+import { createApiRouter } from './api/router';
 import { TypebotOrchestrator } from './services/typebot-orchestrator';
 import { WhatsAppInnovationBridge } from './services/whatsapp-innovation-bridge';
 import { AIOrchestrator } from './services/ai-orchestrator';
 import { RealtimeAnalytics } from './services/realtime-analytics';
 import { InnovationMonitor } from './services/innovation-monitor';
 
+const logger = pino({ level: config.logLevel });
 const app = express();
 
 // 🚀 Innovation Middleware Stack
@@ -13,14 +17,15 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // 🔮 Revolutionary Services
-const typebotOrchestrator = new TypebotOrchestrator();
+const typebotOrchestrator = new TypebotOrchestrator(logger);
 const whatsappBridge = new WhatsAppInnovationBridge();
-const aiOrchestrator = new AIOrchestrator();
+const aiOrchestrator = new AIOrchestrator(logger);
 const analytics = new RealtimeAnalytics();
 const monitor = new InnovationMonitor();
 
 // ⚡ Typebot-First Routing
-app.use('/api/v2/conversations', typebotOrchestrator.getRouter());
+const apiRouter = createApiRouter(typebotOrchestrator, config);
+app.use(apiRouter);
 app.use('/webhooks/whatsapp/innovation', whatsappBridge.getWebhookRouter());
 app.use('/api/v2/ai', aiOrchestrator.getRouter());
 app.use('/api/v2/analytics', analytics.getRouter());
@@ -29,9 +34,9 @@ app.use('/innovation/health', monitor.getHealthRouter());
 // 🌟 Innovation Endpoints
 app.post('/innovation/deploy-flow', async (req, res) => {
   const { flowType, configuration } = req.body;
-  
+
   try {
-    const deployment = await typebotOrchestrator.deployInnovationFlow({ flowType, configuration }); // This needs to be adjusted based on TypebotOrchestrator's actual method signature
+    const deployment = await typebotOrchestrator.deployInnovationFlow({ flowType, configuration });
     res.json({
       success: true,
       deploymentId: deployment.id,
@@ -39,8 +44,8 @@ app.post('/innovation/deploy-flow', async (req, res) => {
       analyticsUrl: deployment.analyticsUrl
     });
   } catch (error: any) {
-    res.status(500).json({ 
-      success: false, 
+    res.status(500).json({
+      success: false,
       error: error.message,
       innovationSupport: 'Contact innovation @cipcagent.co.za'
     });

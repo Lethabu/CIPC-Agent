@@ -12,6 +12,7 @@
     "paths": {
       "@shared/*": ["../shared/*"]
     },
+    "typeRoots": ["./types", "../node_modules/@types"],
     "types": ["jest", "node"],
     "resolveJsonModule": true
   },
@@ -19,6 +20,6 @@
     "esm": true,
     "transpileOnly": true
   },
-  "include": ["src/**/*.ts", "middleware/**/*.ts", "utils/**/*.ts", "*.ts"],
+  "include": ["**/*.ts"],
   "exclude": ["node_modules"]
 }

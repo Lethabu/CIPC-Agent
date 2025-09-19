@@ -1,255 +1,125 @@
-// @ts-ignore
-import { TypebotClient } from '@typebot.io/js';
-import { WebSocket, WebSocketServer } from 'ws';
-import { Redis } from 'ioredis';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import express from 'express';
+import { Logger } from 'pino';
+import { EventEmitter } from 'events';
+import { config } from '../config';
+import { WebSocketService } from './websocket/websocket.service';
+import { FlowService } from './flow/flow.service';
+import { AnalyticsService } from './analytics/analytics.service';
+import { OptimizationService } from './optimization/optimization.service';
+import { Redis } from 'ioredis';
 
-export class TypebotOrchestrator {
-  private typebot: TypebotClient;
-  private redis: Redis;
-  private wsServer!: WebSocketServer;
-  private geminiAI: GoogleGenerativeAI;
-  private innovationFlows: Map<string, any>; // Changed to 'any' for now
-
-  constructor() {
-    this.typebot = new TypebotClient({
-      url: process.env.TYPEBOT_VIEWER_URL || 'http://localhost:3002',
-      apiKey: process.env.TYPEBOT_API_KEY // Assuming API key is needed for deployment
-    });
-    
-    this.redis = new Redis(process.env.REDIS_URL as string);
-    this.geminiAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY as string);
-    this.innovationFlows = new Map();
-    
-    this.initializeWebSocketServer();
-    this.loadInnovationFlows();
-  }
-
-  private initializeWebSocketServer() {
-    this.wsServer = new WebSocketServer({ port: 8080 });
-    
-    this.wsServer.on('connection', (ws, req) => {
-      const sessionId = this.extractSessionId(req);
-      
-      ws.on('message', async (data) => {
-        const message = JSON.parse(data.toString());
-        await this.handleRealtimeMessage(sessionId, message, ws);
-      });
-      
-      // Send real-time analytics
-      this.startRealtimeAnalytics(sessionId, ws);
-    });
-  }
-
-  private extractSessionId(req: any): string {
-    // Placeholder for extracting session ID from request
-    return req.url.split('/').pop() || 'default_session';
-  }
-
-  private async loadInnovationFlows() {
-    // 🎯 Revolutionary AI-Powered Flows
-    const flows = [
-      this.createComplianceScoutFlow(),
-      // Add other flows here as they are defined
-    ];
-
-    for (const flow of flows) {
-      await this.deployInnovationFlow(flow);
-    }
-  }
-
-  private createComplianceScoutFlow(): any { // Changed to 'any' for now
+class MockTypebotClient {
+  constructor() {}
+  async startChat() {
     return {
-      id: 'compliance-scout-v2',
-      name: 'AI Compliance Scout',
-      description: 'Revolutionary compliance assessment with predictive analytics',
-      
-      triggers: ['whatsapp:message', 'web:landing', 'api:assessment'],
-      
-      steps: [
-        {
-          id: 'welcome',
-          type: 'whatsapp:interactive',
-          content: {
-            type: 'button',
-            header: { type: 'text', text: '🚀 CIPC AI Agent' },
-            body: { 
-              text: `🚀 *Welcome to the Future of Compliance*
-              
-Hello! I'm your AI compliance scout. I'll analyze your company's status in 30 seconds.`
-            },
-            action: {
-              buttons: [
-                { id: 'start_analysis', text: '🚀 Start Analysis' },
-                { id: 'learn_more', text: '📚 Learn More' },
-                { id: 'expert_consult', text: '🧑‍💼 Expert Help' }
-              ]
-            }
-          },
-          analytics: { event: 'flow_start', category: 'engagement' }
-        },
-        
-        {
-          id: 'ai_smart_extract',
-          type: 'ai:gemini_pro',
-          config: {
-            prompt: `Extract and validate South African company details:
-                    - Company registration number
-                    - Company name
-                    - Director names
-                    - Financial year-end
-                    Validate format and provide confidence scores.`,
-            fallback: 'manual_input',
-            maxRetries: 3
-          }
-        },
-        
-        {
-          id: 'predictive_analysis',
-          type: 'ai:predictive_compliance',
-          config: {
-            model: 'cipc-compliance-v2',
-            features: ['registration_status', 'filing_history', 'deadline_proximity'],
-            output: ['risk_score', 'recommended_actions', 'timeline']
-          }
-        },
-        
-        {
-          id: 'personalized_offer',
-          type: 'ai:personalization',
-          config: {
-            engine: 'recommendation-v2',
-            inputs: ['company_profile', 'compliance_score', 'user_behavior'],
-            outputs: ['service_bundle', 'pricing', 'urgency_level']
-          }
-        }
-      ],
-      
-      intelligence: {
-        selfOptimizing: true,
-        abTesting: true,
-        realtimeLearning: true,
-        predictiveEngagement: true
-      }
+      sessionId: 'mock-session-id',
+      typebot: {
+        id: 'mock-typebot-id',
+        theme: {},
+        settings: {},
+        variables: [],
+        groups: [],
+        events: [],
+      },
+      messages: [],
+      input: {
+        type: 'text',
+      },
     };
   }
+}
 
-  async deployInnovationFlow(flow: any): Promise<any> { // Changed to 'any' for now
-    try {
-      // Deploy to Typebot
-      const typebotDeployment = { id: 'mock_deployment_id', publicUrl: 'mock_public_url' }; // Mock Typebot deployment
-      
-      // Register with AI orchestrator
-      await this.registerWithAIOrchestrator(flow);
-      
-      // Setup real-time monitoring
-      await this.setupFlowMonitoring(flow);
-      
-      // Initialize analytics tracking
-      await this.initializeAnalytics(flow);
-      
-      this.innovationFlows.set(flow.id, flow);
-      
-      return {
-        success: true,
-        flowId: flow.id,
-        deploymentId: typebotDeployment.id,
-        publicUrl: typebotDeployment.publicUrl,
-        analyticsUrl: `https://analytics.cipcagent.co.za/flows/${flow.id}`,
-        websocketUrl: `wss://ws.cipcagent.co.za/flows/${flow.id}`
-      };
-      
-    } catch (error: any) {
-      throw new Error(`Innovation flow deployment failed: ${error.message}`);
-    }
+export class TypebotOrchestrator {
+  private readonly logger: Logger;
+  private readonly eventEmitter: EventEmitter;
+  private readonly redis: Redis;
+  private readonly geminiAI: GoogleGenerativeAI;
+  private readonly typebot: MockTypebotClient;
+
+  public readonly websocketService: WebSocketService;
+  public readonly flowService: FlowService;
+  public readonly analyticsService: AnalyticsService;
+  public readonly optimizationService: OptimizationService;
+
+  constructor(logger: Logger) {
+    this.logger = logger;
+    this.eventEmitter = new EventEmitter();
+    this.redis = new Redis(config.redis.url);
+    this.geminiAI = new GoogleGenerativeAI(config.gemini.apiKey);
+    this.typebot = new MockTypebotClient();
+
+    this.websocketService = new WebSocketService(this.logger, this.eventEmitter, config.server.port);
+    this.flowService = new FlowService(this.logger, this.eventEmitter, this.typebot as any);
+    this.analyticsService = new AnalyticsService(this.logger, this.eventEmitter, this.redis);
+    this.optimizationService = new OptimizationService(this.logger, this.eventEmitter, this.redis);
+
+    this.setupEventListeners();
   }
 
-  private async registerWithAIOrchestrator(flow: any) {
-    // Placeholder for registering with AI orchestrator
-    console.log(`Registering flow ${flow.id} with AI orchestrator`);
+  public async initialize() {
+    this.websocketService.initialize();
+    this.analyticsService.initialize();
+    this.optimizationService.initialize();
+    await this.flowService.loadInitialFlows();
   }
 
-  private async setupFlowMonitoring(flow: any) {
-    // Placeholder for setting up flow monitoring
-    console.log(`Setting up monitoring for flow ${flow.id}`);
-  }
+  private setupEventListeners() {
+    this.eventEmitter.on('websocket:message', async ({ sessionId, message, ws }) => {
+      this.logger.debug({ sessionId, message }, 'Handling real-time message');
+      const flowId = message.flowId || 'unknown_flow';
+      try {
+        const aiResponse = await this.geminiAI.getGenerativeModel({ model: 'gemini-pro' }).generateContent(message.content);
 
-  private async initializeAnalytics(flow: any) {
-    // Placeholder for initializing analytics
-    console.log(`Initializing analytics for flow ${flow.id}`);
-  }
+        ws.send(
+          JSON.stringify({
+            type: 'ai_response',
+            content: aiResponse.response.text(),
+            metadata: {},
+            timestamp: new Date().toISOString(),
+          })
+        );
 
-  private async handleRealtimeMessage(sessionId: string, message: any, ws: WebSocket) {
-    try {
-      // AI-powered response generation
-      const aiResponse = await this.geminiAI.getGenerativeModel({ model: 'gemini-pro' }).generateContent(message.content);
-
-      // Send AI-enhanced response
-      ws.send(JSON.stringify({
-        type: 'ai_response',
-        content: aiResponse.response.text(),
-        metadata: {},
-        timestamp: new Date().toISOString()
-      }));
-
-      // Real-time analytics
-      await this.trackRealtimeEvent(sessionId, 'ai_response', {});
-
-    } catch (error) {
-      ws.send(JSON.stringify({
-        type: 'error',
-        message: 'AI processing error',
-        fallback: 'human_support'
-      }));
-    }
-  }
-
-  private async trackRealtimeEvent(sessionId: string, eventType: string, data: any) {
-    // Placeholder for tracking real-time events
-    console.log(`Tracking real-time event: ${eventType} for session ${sessionId}`);
-  }
-
-  private startRealtimeAnalytics(sessionId: string, ws: WebSocket) {
-    // Placeholder for starting real-time analytics
-    console.log(`Starting real-time analytics for session ${sessionId}`);
-  }
-
-  getRouter() {
-    const router = express.Router();
-    
-    // Innovation endpoints
-    router.post('/deploy', async (req, res) => {
-      const { flowType, configuration } = req.body;
-      const result = await this.deployInnovationFlow(this.createCustomFlow(flowType, configuration));
-      res.json(result);
+        await this.analyticsService.trackEvent(flowId, 'ai_response', {});
+      } catch (error) {
+        this.logger.error({ sessionId, error }, 'AI processing error');
+        ws.send(
+          JSON.stringify({
+            type: 'error',
+            message: 'AI processing error',
+            fallback: 'human_support',
+          })
+        );
+        await this.analyticsService.trackEvent(flowId, 'error', { error: (error as Error).message });
+      }
     });
-    
-    router.get('/flows/:flowId/analytics', async (req, res) => {
-      const analytics = await this.getFlowAnalytics(req.params.flowId);
-      res.json(analytics);
-    });
-    
-    router.post('/flows/:flowId/optimize', async (req, res) => {
-      const optimization = await this.optimizeFlow(req.params.flowId, req.body);
-      res.json(optimization);
-    });
-    
-    return router;
   }
 
-  private createCustomFlow(flowType: string, configuration: any): any {
-    // Placeholder for creating custom flows
-    return { id: `custom-flow-${Date.now()}`, name: flowType, ...configuration };
+  // Delegated methods for the API router
+  public deployInnovationFlow(flow: any) {
+    return this.flowService.deployInnovationFlow(flow);
   }
 
-  private async getFlowAnalytics(flowId: string): Promise<any> {
-    // Placeholder for getting flow analytics
-    return { flowId, data: {} };
+  public listInnovationFlows() {
+    return this.flowService.listInnovationFlows();
   }
 
-  private async optimizeFlow(flowId: string, optimizationData: any): Promise<any> {
-    // Placeholder for optimizing flow
-    return { flowId, optimization: optimizationData, status: 'optimized' };
+  public getInnovationFlow(flowId: string) {
+    return this.flowService.getInnovationFlow(flowId);
+  }
+
+  public deleteInnovationFlow(flowId: string) {
+    return this.flowService.deleteInnovationFlow(flowId);
+  }
+
+  public createCustomFlow(flowType: string, configuration: any) {
+    return this.flowService.createCustomFlow(flowType, configuration);
+  }
+
+  public getFlowAnalytics(flowId: string) {
+    return this.analyticsService.getAnalytics(flowId);
+  }
+
+  public optimizeFlow(flowId: string, optimizationData: any) {
+    return this.optimizationService.optimizeFlow(flowId, optimizationData);
   }
 }
