@@ -14,3 +14,41 @@ env/
 # IDEs
 .idea/
 .vscode/
+
+# Build artifacts
+node_modules/
+dist/
+*.exe
+*.log
+
+# Cache directories
+.cache/
+.npm/
+.pm2/
+.local/
+.config/
+.android*/
+.emu/
+.codeoss*/
+.monospace*/
+.pki/
+.docker/
+.aws/
+.gemini/
+.global_modules/
+.idx/ai/
+
+# OS files
+.bash_history
+.bashrc
+.bash_logout
+.profile
+.gitconfig
+
+# Temp files
+replit.md
+automation-test.js
+get-docker.sh
+dockerd.log
+*.zip
+*.bfg-report/
