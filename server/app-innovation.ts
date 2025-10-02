@@ -19,7 +19,7 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 // 🔮 Revolutionary Services
 const typebotOrchestrator = new TypebotOrchestrator(logger);
 const whatsappBridge = new WhatsAppInnovationBridge();
-const aiOrchestrator = new AIOrchestrator(logger);
+const aiOrchestrator = new AIOrchestrator(config);
 const analytics = new RealtimeAnalytics();
 const monitor = new InnovationMonitor();
 

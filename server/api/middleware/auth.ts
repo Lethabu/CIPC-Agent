@@ -56,7 +56,11 @@ export const authMiddleware = async (
       });
     }
 
-    req.user = decodedToken as DecodedIdToken;
+    req.user = {
+      uid: decodedToken.uid,
+      email: decodedToken.email,
+      email_verified: decodedToken.email_verified
+    } as { uid: string; email: string; email_verified: boolean };
     next();
   } catch (error) {
     console.error('Authentication error:', error);

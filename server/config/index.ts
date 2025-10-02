@@ -17,6 +17,9 @@ export const config = {
         url: process.env.TYPEBOT_URL || '',
         apiKey: process.env.TYPEBOT_API_KEY || '',
     },
+    openai: {
+        apiKey: process.env.OPENAI_API_KEY || '',
+    },
 };
 
 export type AppConfig = typeof config;

@@ -7,6 +7,7 @@ import { RealtimeAIOptimizer } from './realtime-ai-optimizer';
 import { EmotionAI } from './emotion-ai';
 import { PredictiveComplianceEngine } from './predictive-compliance-engine';
 import { AppConfig } from '../config';
+import pino from 'pino';
 
 export class AIOrchestrator {
   private gemini: GoogleGenerativeAI;
@@ -19,10 +20,11 @@ export class AIOrchestrator {
   private predictiveEngine!: PredictiveComplianceEngine;
 
   constructor(private config: AppConfig) {
+    const logger = pino({ level: config.logLevel });
     this.gemini = new GoogleGenerativeAI(config.gemini.apiKey);
-    this.openai = new OpenAI({ apiKey: config.openai.apiKey });
+    this.openai = new OpenAI({ apiKey: (config as any).openai.apiKey });
     this.redis = new Redis(config.redis.url);
-    this.typebot = new TypebotOrchestrator(config); // Assuming TypebotOrchestrator is already defined or will be
+    this.typebot = new TypebotOrchestrator(logger);
     
     this.mlModels = new Map<string, any>();
     this.initializeAIEngines();
