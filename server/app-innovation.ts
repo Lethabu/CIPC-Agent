@@ -1,4 +1,5 @@
 import express from 'express';
+import aisensyWebhook from './src/webhooks/aisensy';
 import pino from 'pino';
 import { config } from './config';
 import { createApiRouter } from './api/router';
@@ -19,7 +20,9 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 // 🔮 Revolutionary Services
 const typebotOrchestrator = new TypebotOrchestrator(logger);
 const whatsappBridge = new WhatsAppInnovationBridge();
+/*
 const aiOrchestrator = new AIOrchestrator(config);
+*/
 const analytics = new RealtimeAnalytics();
 const monitor = new InnovationMonitor();
 
@@ -27,9 +30,13 @@ const monitor = new InnovationMonitor();
 const apiRouter = createApiRouter(typebotOrchestrator, config);
 app.use(apiRouter);
 app.use('/webhooks/whatsapp/innovation', whatsappBridge.getWebhookRouter());
+/*
 app.use('/api/v2/ai', aiOrchestrator.getRouter());
+*/
 app.use('/api/v2/analytics', analytics.getRouter());
 app.use('/innovation/health', monitor.getHealthRouter());
+
+app.use('/webhooks/aisensy', aisensyWebhook);
 
 // 🌟 Innovation Endpoints
 app.post('/innovation/deploy-flow', async (req, res) => {
@@ -53,3 +60,8 @@ app.post('/innovation/deploy-flow', async (req, res) => {
 });
 
 export default app;
+
+const port = config.server.port;
+app.listen(port, () => {
+  logger.info(`🚀 Innovation Server listening on port ${port}`);
+});

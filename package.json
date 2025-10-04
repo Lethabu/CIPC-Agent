@@ -26,6 +26,7 @@
     "@langchain/openai": "^0.1.0",
     "@neondatabase/serverless": "^1.0.1",
     "@temporalio/client": "^1.13.0",
+    "@typebot.io/js": "^0.9.3",
     "@types/connect-pg-simple": "^7.0.3",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/pino": "^7.0.5",

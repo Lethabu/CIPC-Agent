@@ -13,10 +13,10 @@ export class WhatsAppInnovationBridge {
   constructor() {
     this.whatsappAPI = {}; // Mock
     
-    this.typebot = new TypebotClient({
-      url: process.env.TYPEBOT_VIEWER_URL || 'http://localhost:3002',
-      apiKey: process.env.TYPEBOT_API_KEY // Assuming API key is needed
-    });
+    // this.typebot = new TypebotClient({
+    //   url: process.env.TYPEBOT_VIEWER_URL || 'http://localhost:3002',
+    //   apiKey: process.env.TYPEBOT_API_KEY // Assuming API key is needed
+    // });
     this.messageQueue = {}; // Mock
     this.mediaProcessor = {}; // Mock
     
