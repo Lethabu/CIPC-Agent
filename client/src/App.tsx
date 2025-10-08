@@ -1,15 +1,22 @@
-import React from 'react';
-import { Typebot } from '@typebot.io/react';
+import React, { useEffect } from 'react';
 
 export default function App() {
   const typebotUrl = import.meta.env.VITE_TYPEBOT_URL || 'http://localhost:3002';
 
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = `${typebotUrl}/integrations/web/v1/manage.js`;
+    script.async = true;
+    document.head.appendChild(script);
+
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, [typebotUrl]);
+
   return (
     <div className="min-h-screen">
-      <Typebot
-        typebot="cipc-onboarding"
-        apiHost={typebotUrl}
-      />
+      <typebot-standard typebot="cipc-onboarding" api-host={typebotUrl}></typebot-standard>
     </div>
   );
 }
