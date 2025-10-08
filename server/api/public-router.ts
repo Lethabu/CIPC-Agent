@@ -71,7 +71,7 @@ export const createPublicRouter = (orchestrator: TypebotOrchestrator, config: Ap
 
       // Create user record
       const newUser = await db.insert(users).values({
-        companyRegistrationNumber,
+        companyRegNumber: companyRegistrationNumber,
         phoneNumber: whatsappNumber,
         consentGiven: true,
         consentDate: new Date(),
