@@ -1,7 +1,7 @@
 import React from 'react';
 
 export default function App() {
-  const whatsappNumber = process.env.WHATSAPP_NUMBER || "+27871234567";
+  const whatsappNumber = process.env.WHATSAPP_NUMBER || "wa.aisensy.com/+27699171527";
   const whatsappLink = `https://wa.me/${whatsappNumber.replace('+', '')}?text=hi`;
 
   return (
