@@ -1,8 +1,8 @@
 import React from 'react';
 
 export default function Landing() {
-  const whatsappNumber = "+27123456789"; // Replace with your AiSensy number
-  const whatsappLink = `https://wa.me/${whatsappNumber.replace('+', '')}?text=hi`;
+  const whatsappNumber = import.meta.env.VITE_AI_SENSY_WHATSAPP_NUMBER;
+  const whatsappLink = whatsappNumber ? `https://wa.me/${whatsappNumber.replace('+', '')}?text=hi` : '#';
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">

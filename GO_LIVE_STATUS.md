@@ -5,7 +5,7 @@
 ### 📱 Landing Page
 - **Status:** LIVE
 - **Build:** Successful (177KB bundle)
-- **WhatsApp Number:** +27871234567
+- **WhatsApp Number:** +27699171527
 - **CTA:** "Start on WhatsApp - FREE"
 
 ### 🔗 WhatsApp Webhook  
@@ -59,8 +59,8 @@ curl -X POST http://localhost:3001/webhook \
 ```
 
 ### 3. Outreach Templates Ready
-- **LinkedIn DM:** "Hi [Name], saw your post about [challenge]. We just launched a WhatsApp bot that does CIPC compliance in 90 seconds. Worth a look? wa.me/27871234567"
-- **Facebook Post:** "🏢 SA Business Owners: Get your CIPC compliance score in 30 seconds. Try it free: wa.me/27871234567"
+- **LinkedIn DM:** "Hi [Name], saw your post about [challenge]. We just launched a WhatsApp bot that does CIPC compliance in 90 seconds. Worth a look? wa.me/27699171527"
+- **Facebook Post:** "🏢 SA Business Owners: Get your CIPC compliance score in 30 seconds. Try it free: wa.me/27699171527"
 
 ## 📊 SUCCESS METRICS
 
