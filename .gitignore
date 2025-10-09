@@ -53,3 +53,4 @@ dockerd.log
 *.zip
 *.bfg-report/
 "android/.gradle/" 
+.vercel
