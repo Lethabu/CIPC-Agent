@@ -4,11 +4,7 @@
   "installCommand": "npm install",
   "framework": null,
   "outputDirectory": "dist",
-  "functions": {
-    "api/**/*.ts": {
-      "runtime": "node@20.x"
-    }
-  },
+
   "routes": [
     {
       "src": "/api/(.*)",
