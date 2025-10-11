@@ -232,11 +232,38 @@ func processWebhookHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	var err error
-	temporalClient, err = client.Dial(client.Options{
-		Namespace: "cipc-agent-ns", // As per your masterbuild
-	})
+	// Load environment variables for Temporal connection
+	hostPort := os.Getenv("TEMPORAL_HOST_PORT")
+	if hostPort == "" {
+		hostPort = "localhost:7233"
+	}
+	namespace := os.Getenv("TEMPORAL_NAMESPACE")
+	if namespace == "" {
+		namespace = "default"
+	}
+	apiKey := os.Getenv("TEMPORAL_API_KEY")
+
+	// Configure client options based on environment
+	clientOptions := client.Options{
+		HostPort:  hostPort,
+		Namespace: namespace,
+	}
+
+	if apiKey != "" {
+		// Production environment with Temporal Cloud
+		clientOptions.Credentials = client.NewAPIKeyStaticCredentials(apiKey)
+		clientOptions.ConnectionOptions = client.ConnectionOptions{
+			TLS: &tls.Config{},
+		}
+		log.Println("Connecting to Temporal Cloud at:", hostPort)
+	} else {
+		// Local development environment
+		log.Println("Connecting to local Temporal server at:", hostPort)
+	}
+
+	temporalClient, err = client.Dial(clientOptions)
 	if err != nil {
-		log.Fatalln("Unable to create client", err)
+		log.Fatalln("Unable to create Temporal client", err)
 	}
 	defer temporalClient.Close()
 
