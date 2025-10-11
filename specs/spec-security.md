@@ -1,36 +1,16 @@
+# Spec: Security (SEC)
 
-# Security Specification (SEC-01)
+## Principles
 
-**Version:** 1.0
-**Status:** Proposed
-**Author:** AI Assistant
-**Date:** 2025-10-06
+- **SEC-01: No Secrets in Repository.** Under no circumstances shall any secrets (API keys, passwords, connection strings, private keys) be committed to the Git repository.
+- **SEC-02: Centralized Secret Management.** All secrets must be managed through a centralized secret management service (Doppler). Applications will fetch secrets from this service at runtime.
+- **SEC-03: Environment Template.** A `.env.example` file must be present at the root of the repository, listing all required environment variables with placeholder or non-sensitive default values.
+- **SEC-04: Gitignore.** The `.gitignore` file must contain entries to ignore all environment files, specifically `.env*`.
 
-## 1. Overview
+## Remediation Procedures
 
-This specification outlines the security requirements for the CIPC-Agent platform. The primary goal is to remediate the critical security flaw of having a publicly committed `.env` file with exposed production keys. This document formalizes the requirements for a secure repository and a robust secrets management strategy.
-
-## 2. Security Requirements
-
-| ID | Requirement | Description |
-| :--- | :--- | :--- |
-| **SEC-01** | No secrets in the repository | The repository MUST NOT contain any secrets, API keys, or other sensitive information in plain text. |
-| **SEC-02** | Secrets management | All secrets MUST be managed through a secure secrets management service (Doppler). |
-| **SEC-03** | `.env` file handling | The `.env` file MUST be purged from the Git history. It MUST be listed in the `.gitignore` file. |
-| **SEC-04** | `.env.example` | An `.env.example` file MUST exist in the repository root, providing a template for required environment variables. |
-
-## 3. Remediation Plan
-
-1.  **Rotate Keys:** All exposed keys in the original `.env` file MUST be considered compromised and rotated immediately.
-2.  **Setup Doppler:** A new Doppler project MUST be created to manage all environment variables for development, staging, and production.
-3.  **Purge Git History:** The `.env` file MUST be completely removed from the Git history using `git filter-repo` or a similar tool.
-4.  **Update `.gitignore`:** The `.gitignore` file MUST be updated to include `.env`.
-5.  **Create `.env.example`:** A new `.env.example` file MUST be created based on the variables in the original `.env` file, with all sensitive values removed.
-
-## 4. Verification Plan
-
-| ID | Description | Verification Steps |
-| :--- | :--- | :--- |
-| **SEC-01-VERIFY** | No `.env` file in history | Run `git log --all -- .env` and verify that no commits related to the `.env` file exist. |
-| **SEC-02-VERIFY** | `.gitignore` is correct | Check the content of the `.gitignore` file to ensure it contains a line for `.env`. |
-| **SEC-03-VERIFY** | `.env.example` exists | Verify that the `.env.example` file exists in the root of the repository. |
+- **SEC-RP-01: Secret Leak Protocol.** If a secret is ever committed, the following steps must be taken immediately:
+    1. The leaked secret must be immediately rotated and invalidated.
+    2. The `git filter-repo` tool must be used to purge the secret from the entire Git history.
+    3. A force push to the remote repository is required to overwrite the compromised history.
+    4. A full audit must be conducted to ensure no other secrets were exposed.

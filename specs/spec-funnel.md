@@ -1,53 +1,42 @@
+# Spec: Minimum Viable Funnel (MVF)
 
-# Funnel Specification (FUN-01)
+## Principles
 
-**Version:** 1.0
-**Status:** Proposed
-**Author:** AI Assistant
-**Date:** 2025-10-06
+- **MVF-01: Conversational First.** The initial user onboarding, data collection, and payment flow will be handled by a conversational interface, not a traditional web form.
+- **MVF-02: Decoupled Architecture.** The funnel components (frontend, backend, conversational UI) will be deployed as separate, independent services.
 
-## 1. Overview
+## Components
 
-This specification outlines the architecture and implementation of the Minimum Viable Funnel (MVF) for the CIPC-Agent platform. The primary goal is to replace the current static frontend with a dynamic, conversational user funnel built on Typebot. This will enable rapid iteration and a seamless user experience, guiding users from the landing page to initiating a CIPC compliance check via WhatsApp.
+- **MVF-COMP-01: Conversational Frontend (Typebot)**
+    - **Technology:** Self-hosted Typebot instance.
+    - **Deployment:** Render, using the `baptistearno/typebot:latest` Docker image.
+    - **Function:**
+        - Guides the user through an onboarding conversation.
+        - Collects user and company data.
+        - Triggers webhooks to the backend.
 
-## 2. Components
+- **MVF-COMP-02: Landing Page**
+    - **Technology:** Simple, static `index.html`.
+    - **Deployment:** Vercel.
+    - **Function:**
+        - Provides a public-facing landing page for the service.
+        - Embeds the Typebot conversational flow.
+        - The domain `www.cipcagent.co.za` will point to this deployment.
 
-| Component | Technology | Hosting | Purpose |
-| :--- | :--- | :--- | :--- |
-| **Landing Page** | HTML/CSS | Vercel | Simple, fast-loading page to attract users and embed the Typebot. |
-| **Conversational UI** | Typebot | Self-hosted (Render) | Interactive, conversational flow for user onboarding and data collection. |
-| **Communication** | AISensy | - | Manages all WhatsApp communication with the user. |
-| **Backend** | Go/Gin | Fly.io | Receives data from Typebot via webhooks for processing. |
+- **MVF-COMP-03: Backend Webhook Handler**
+    - **Technology:** Go (Golang).
+    - **Deployment:** Fly.io.
+    - **Endpoint:** `POST /api/v1/flows/onboard`
+    - **Function:**
+        - Receives data from the Typebot webhook.
+        - Processes the data.
+        - Triggers the AISensy API to send a confirmation message via WhatsApp.
 
-## 3. User Flow
+## Flow
 
-1.  A user visits `www.cipcagent.co.za`.
-2.  The `index.html` landing page is served from Vercel.
-3.  The page displays a clear call-to-action (CTA) that launches the embedded Typebot.
-4.  The user interacts with the Typebot, providing necessary information for the compliance check.
-5.  At the end of the Typebot flow, the user is prompted to continue the conversation on WhatsApp.
-6.  Typebot redirects the user to the Ai Sensy WhatsApp URL: `https://wa.aisensy.com/+27699171527?text=hi`.
-7.  The user sends the pre-filled "hi" message, and the backend takes over the conversation via Ai Sensy.
-
-## 4. Implementation Details
-
-### 4.1. `index.html` Landing Page
-
-The landing page will be a single HTML file with minimal styling. It will contain:
-- A compelling headline and subheading.
-- An embedded Typebot window.
-
-### 4.2. Typebot Flow
-
-The Typebot flow will be designed to be simple and engaging. It will:
-- Greet the user.
-- Ask for the company registration number.
-- Validate the input.
-- Ask for consent to be contacted on WhatsApp.
-- Redirect to the Ai Sensy WhatsApp URL.
-
-## 5. Verification Plan
-
-| ID | Description | Verification Steps |
-| :--- | :--- | :--- |
-| **MVF-01** | The user can complete the funnel. | 1. Navigate to `www.cipcagent.co.za`. 2. Interact with the Typebot. 3. Be redirected to the correct WhatsApp chat. |
+1. User visits `www.cipcagent.co.za`.
+2. The Vercel-hosted `index.html` page loads, which embeds the Typebot flow.
+3. User interacts with the Typebot, providing their information.
+4. At the end of the conversation, Typebot sends the collected data to the `POST /api/v1/flows/onboard` endpoint on the Fly.io-hosted Go backend.
+5. The Go backend receives the data and calls the AISensy API.
+6. AISensy sends a "Welcome" message to the user's WhatsApp number.
