@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/tls"
 	"log"
+	"os"
 
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
@@ -17,7 +18,15 @@ func main() {
 		HostPort:          "eu-west-1.aws.api.temporal.io:7233",
 		Namespace:         "quickstart-cipc-agent-prod.jknwa",
 		ConnectionOptions: client.ConnectionOptions{TLS: &tls.Config{}},
-		Credentials:       client.NewAPIKeyStaticCredentials("eyJhbGciOiJFUzI1NiIsICJraWQiOiJXdnR3YUEifQ.eyJhY2NvdW50X2lkIjoiamtud2EiLCAiYXVkIjpbInRlbXBvcmFsLmlvIl0sICJleHAiOjE4MjAxMTI4MjQsICJpc3MiOiJ0ZW1wb3JhbC5pbyIsICJqdGkiOiIwdVVySUJZcGxTeWNLQW1ZYzJIVDA4cTQxRERObzhwcyIsICJrZXlfaWQiOiIwdVVySUJZcGxTeWNLQW1ZYzJIVDA4cTQxRERObzhwcyIsICJzdWIiOiI3M2NkZGY5Y2JiZjM0ZDBkYjZjNTE0YmQ1ZTMyZDJmNyJ9.V-lou5ue4EOlF4QYIazI6vaptTbIwDwJLRAAL-uDLGppDKxrNV2DpN8SDtd7MvLaaQmK24pVMIpQU0yqak1sDgeyJhbGciOiJFUzI1NiIsICJraWQiOiJXdnR3YUEifQ.eyJhY2NvdW50X2lkIjoiamtud2EiLCAiYXVkIjpbInRlbXBvcmFsLmlvIl0sICJleHAiOjE4MjAxMTI4MjQsICJpc3MiOiJ0ZW1wb3JhbC5pbyIsICJqdGkiOiIwdVVySUJZcGxTeWNLQW1ZYzJIVDA4cTQxRERObzhwcyIsICJrZXlfaWQiOiIwdVVySUJZcGxTeWNLQW1ZYzJIVDA4cTQxRERObzhwcyIsICJzdWIiOiI3M2NkZGY5Y2JiZjM0ZDBkYjZjNTE0YmQ1ZTMyZDJmNyJ9.V-lou5ue4EOlF4QYIazI6vaptTbIwDwJLRAAL-uDLGppDKxrNV2DpN8SDtd7MvLaaQmK24pVMIpQU0yqak1sDg"),
+	}
+
+	if apiKey := os.Getenv("TEMPORAL_API_KEY"); apiKey != "" {
+		clientOptions.Credentials = client.NewAPIKeyStaticCredentials(apiKey)
+	} else {
+		log.Println("TEMPORAL_API_KEY not set. For local development, will attempt to connect without credentials.")
+		// For local dev, you might want to change the HostPort and disable TLS, e.g.:
+		// clientOptions.HostPort = "localhost:7233"
+		// clientOptions.ConnectionOptions.TLS = nil
 	}
 	c, err := client.Dial(clientOptions)
 	if err != nil {
