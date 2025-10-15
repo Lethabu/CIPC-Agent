@@ -9,10 +9,14 @@ import session from 'express-session';
 import ConnectPgSimple from 'connect-pg-simple';
 import { config } from './config';
 import { TypebotOrchestrator } from './services/typebot-orchestrator';
+import { ImmediateActionService } from './services/immediate-action.service';
 import { createPrivateRouter } from './api/private-router';
 import { createPublicRouter } from './api/public-router';
+import { createImmediateActionRouter } from './routes/immediate-actions';
+import { ImmediateWebhookHandler } from './webhooks/immediate-webhook';
 import { authMiddleware } from './api/middleware/auth';
 import { pool } from './db';
+import { Redis } from 'ioredis';
 
 const logger = pino({ level: config.logLevel });
 
@@ -39,12 +43,23 @@ app.use(session({
   },
 }));
 
+const redis = new Redis(config.redis.url);
 const orchestrator = new TypebotOrchestrator(logger);
+const actionService = new ImmediateActionService(logger, orchestrator['eventEmitter'], redis);
+const webhookHandler = new ImmediateWebhookHandler(logger, actionService);
+
 const privateRouter = createPrivateRouter(orchestrator, config);
 const publicRouter = createPublicRouter(orchestrator, config);
+const actionRouter = createImmediateActionRouter(logger, actionService);
 
 app.use('/api', publicRouter);
+app.use('/api/actions', actionRouter);
 app.use('/api', authMiddleware, privateRouter);
+
+// Webhook endpoints for immediate actions
+app.post('/webhook/whatsapp', (req, res) => webhookHandler.handleWhatsAppWebhook(req, res));
+app.post('/webhook/typebot', (req, res) => webhookHandler.handleTypebotWebhook(req, res));
+app.post('/webhook/payment', (req, res) => webhookHandler.handlePaymentWebhook(req, res));
 
 app.get('/health', (req, res) => {
   res.status(200).send('OK');

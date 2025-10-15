@@ -1,0 +1,16 @@
+{
+  "projectId": "prj_7AYcTd4GYMwwSLZ6VK948rMdlIW0",
+  "orgId": "team_FrMoiimBKma0ySVyoX8IpRJy",
+  "projectName": "cipc-agent",
+  "settings": {
+    "createdAt": 1755331389553,
+    "framework": "vite",
+    "devCommand": null,
+    "installCommand": null,
+    "buildCommand": "cd client && npm install && npm run build",
+    "outputDirectory": "client/dist",
+    "rootDirectory": null,
+    "directoryListing": false,
+    "nodeVersion": "22.x"
+  }
+}

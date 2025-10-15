@@ -4,6 +4,7 @@ import { AppConfig } from '../config';
 import { db } from '../src/db';
 import { users } from '../../shared/schema';
 import pino from 'pino';
+import aisensyWebhook from '../webhooks/aisensy-webhook';
 
 const logger = pino({ level: 'info' });
 
@@ -51,6 +52,9 @@ export const createPublicRouter = (orchestrator: TypebotOrchestrator, config: Ap
   router.get('/status', (req, res) => {
     res.status(200).json({ status: 'running' });
   });
+
+  // AiSensy webhook endpoint
+  router.use('/webhook/aisensy', aisensyWebhook);
 
   // Onboarding webhook from Typebot
   router.post('/v1/flows/onboard', async (req, res) => {

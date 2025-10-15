@@ -1,56 +1,40 @@
-# Python
+# Environment files
+.env
+.env.local
+.env.production
+.env.production.secure
+
+# Dependencies
+node_modules/
 __pycache__/
 *.pyc
-*.pyo
-*.pyd
-.Python
 
-# Environments
-.env*
-.venv
-venv/
-env/
-
-# IDEs
-.idea/
-.vscode/
-
-# Build artifacts
-node_modules/
-dist/
-*.exe
+# Logs
+logs/
 *.log
 
-# Cache directories
-.cache/
-.npm/
-.pm2/
-.local/
-.config/
-.android*/
-.emu/
-.codeoss*/
-.monospace*/
-.pki/
-.docker/
-.aws/
-.gemini/
-.global_modules/
-.idx/ai/
+# Runtime data
+pids/
+*.pid
+*.seed
 
-# OS files
-.bash_history
-.bashrc
-.bash_logout
-.profile
-.gitconfig
+# Coverage directory used by tools like istanbul
+coverage/
 
-# Temp files
-replit.md
-automation-test.js
-get-docker.sh
-dockerd.log
-*.zip
-*.bfg-report/
-"android/.gradle/" 
-.vercel
+# Build outputs
+dist/
+build/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+tmp/
+temp/

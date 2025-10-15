@@ -281,18 +281,26 @@ func main() {
 
 	w := worker.New(temporalClient, "CIPC_TASK_QUEUE", worker.Options{})
 
-	// Register Onboarding Workflow
-	w.RegisterWorkflow(temporal.OnboardingWorkflow)
-	w.RegisterActivity(temporal.SendWhatsAppWelcomeActivity)
-	w.RegisterActivity(temporal.KYCOnboarderActivity)
-	w.RegisterActivity(temporal.ComplianceCopilotActivity)
-	w.RegisterActivity(temporal.PromptSubscriptionActivity)
+	// --- UNIFIED WORKFLOW & ACTIVITY REGISTRATIONS ---
 
-	// Register Filing Workflow (with the new OTP activity)
-	w.RegisterWorkflow(temporal.FilingWorkflow)
+	// Register Onboarding Workflow & Activities
+	w.RegisterWorkflow(temporal.OnboardingWorkflow)
+	w.RegisterActivity(temporal.SendWelcomeAndConsentActivity)
+	w.RegisterActivity(temporal.SendConsentTimeoutMessageActivity)
+	w.RegisterActivity(temporal.CalculateInitialComplianceScoreActivity)
+	w.RegisterActivity(temporal.PromptSubscriptionActivity)
+	w.RegisterActivity(temporal.KYCOnboarderActivity)
+	w.RegisterActivity(temporal.ComplianceCopilotActivity) // Note: This might be similar to CalculateInitialComplianceScoreActivity
+
+	// Register the Unified Filing Workflow & Activities
+	w.RegisterWorkflow(temporal.CombinedFilingWorkflow) // Using the "NEW, CORRECTED" workflow
 	w.RegisterActivity(temporal.ValidateFilingDataActivity)
-	w.RegisterActivity(temporal.RequestOTPActivity) // <-- New activity registered
-	w.RegisterActivity(temporal.SubmitFilingToCIPCActivity)
+	w.RegisterActivity(temporal.ValidatePaymentActivity)
+	w.RegisterActivity(temporal.ExtractDocumentDataActivity)
+	w.RegisterActivity(temporal.RequestOTPActivity)
+	w.RegisterActivity(temporal.SubmitToCIPCActivity)
+	w.RegisterActivity(temporal.UpdateUserRecordsActivity)
+	w.RegisterActivity(temporal.SendWhatsAppMessageActivity) // Generic message activity
 	w.RegisterActivity(temporal.SendWhatsAppConfirmationActivity)
 
 	// Register Payment Workflows & Activities
@@ -307,19 +315,24 @@ func main() {
 	w.RegisterActivity(temporal.VerifyPaymentActivity)
 	w.RegisterActivity(temporal.ProcessWebhookActivity)
 
-	// Register Payment Recovery Workflow
+	// Register Payment Recovery Workflow (User's Choice: Option B)
 	w.RegisterWorkflow(temporal.PaymentRecoveryWorkflow)
-	w.RegisterActivity(temporal.TransactionScanActivity)
-	w.RegisterActivity(temporal.ReconciliationActivity)
-	w.RegisterActivity(temporal.CipcEscalationActivity)
-	w.RegisterActivity(temporal.RefundActivity)
+	w.RegisterActivity(temporal.ChargeCardActivity)
+	w.RegisterActivity(temporal.SendPaymentSuccessMessageActivity)
+	w.RegisterActivity(temporal.SendPaymentFailedMessageActivity)
+	w.RegisterActivity(temporal.SuspendAccountActivity)
+
+	// Register AI Workflow
+	w.RegisterWorkflow(temporal.AIWhatsAppWorkflow)
+	w.RegisterActivity(temporal.CallAIActivity)
 
 	// Register Compliance Monitoring Workflow
 	w.RegisterWorkflow(temporal.ComplianceMonitoringWorkflow)
-	w.RegisterActivity(temporal.DeadlineCheckActivity)
+	w.RegisterActivity(temporal.CheckUpcomingDeadlinesActivity)
+	w.RegisterActivity(temporal.SendDeadlineNotificationActivity)
 	w.RegisterActivity(temporal.AlertSenderActivity)
 
-	log.Println("Starting worker with all workflows and activities registered...")
+	log.Println("Starting unified worker with all workflows and activities registered...")
 	err = w.Run(worker.InterruptCh())
 	if err != nil {
 		log.Fatalln("Unable to start worker", err)
