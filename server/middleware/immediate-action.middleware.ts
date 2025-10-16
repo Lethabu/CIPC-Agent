@@ -36,7 +36,7 @@ export class ImmediateActionMiddleware {
 
   public validateAction() {
     return (req: ActionRequest, res: Response, next: NextFunction) => {
-      const { actionType, payload } = req.body;
+      const { actionType } = req.body;
 
       if (!actionType) {
         return res.status(400).json({
@@ -55,7 +55,7 @@ export class ImmediateActionMiddleware {
   }
 
   public executeAction() {
-    return async (req: ActionRequest, res: Response, next: NextFunction) => {
+    return async (req: ActionRequest, res: Response, _next: NextFunction) => {
       try {
         const { actionType, payload } = req.body;
         const context = req.actionContext!;

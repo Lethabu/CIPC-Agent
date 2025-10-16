@@ -1,33 +1,17 @@
-# Stage 1: Build
-FROM python:3.9-slim as builder
+# Go Worker Dockerfile
+FROM golang:1.21-alpine AS builder
 
 WORKDIR /app
+COPY go.mod go.sum ./
+RUN go mod download
 
-# Create a non-root user
-RUN useradd -ms /bin/bash appuser
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux go build -o worker ./worker
 
-# Copy requirements and install dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+FROM alpine:latest
+RUN apk --no-cache add ca-certificates
+WORKDIR /root/
 
-# Stage 2: Final image
-FROM python:3.9-slim
+COPY --from=builder /app/worker .
 
-WORKDIR /app
-
-# Create a non-root user
-RUN useradd -ms /bin/bash appuser
-
-# Copy installed packages from builder stage
-COPY --from=builder /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
-COPY --from=builder /usr/local/bin/ /usr/local/bin/
-
-# Copy the application
-COPY CIPC_Agent.py .
-
-# Switch to non-root user
-USER appuser
-
-# Expose port and run the application
-EXPOSE 8501
-CMD ["streamlit", "run", "CIPC_Agent.py"]
+CMD ["./worker"]

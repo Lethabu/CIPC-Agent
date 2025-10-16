@@ -20,7 +20,7 @@ export default function WhatsAppMockup() {
       <div className="p-4 space-y-3 bg-gray-50 h-64 overflow-y-auto">
         <div className="flex justify-start">
           <div className="whatsapp-message whatsapp-message-received">
-            <p className="text-sm">👋 Hi! I'm your CIPC AI assistant. Upload your company docs and I'll handle your annual returns in 90 seconds!</p>
+            <p className="text-sm">👋 Hi! I&apos;m your CIPC AI assistant. Upload your company docs and I&apos;ll handle your annual returns in 90 seconds!</p>
           </div>
         </div>
         

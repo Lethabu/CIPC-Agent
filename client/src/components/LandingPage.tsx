@@ -89,7 +89,7 @@ const LandingPage: React.FC = () => {
         <div className="container hero-content">
           <h1>Automate Your CIPC Compliance in Minutes</h1>
           <p className="subtitle">
-            South Africa's most trusted AI-powered platform for Annual Returns, Beneficial Ownership filings, 
+            South Africa&apos;s most trusted AI-powered platform for Annual Returns, Beneficial Ownership filings, 
             and Company Registration. No more manual paperwork, no more missed deadlines.
           </p>
           
@@ -269,8 +269,8 @@ const LandingPage: React.FC = () => {
           <div className="footer-content">
             <div className="footer-section">
               <h3>CIPC Agent</h3>
-              <p>South Africa's leading AI-powered CIPC compliance platform. Trusted by 15,000+ businesses.</p>
-              <p><strong>📱 WhatsApp:</strong> <a href="#" onClick={() => openWhatsApp("Hi, I'd like to enquire about your services.")}>+27 69 917 1527</a></p>
+              <p>South Africa&apos;s leading AI-powered CIPC compliance platform. Trusted by 15,000+ businesses.</p>
+              <p><strong>📱 WhatsApp:</strong> <a href="#" onClick={() => openWhatsApp("Hi, I&apos;d like to enquire about your services.")}>+27 69 917 1527</a></p>
               <p><strong>📧 Email:</strong> <a href="mailto:hello@cipcagent.co.za">hello@cipcagent.co.za</a></p>
             </div>
             <div className="footer-section">
@@ -315,11 +315,11 @@ const LandingPage: React.FC = () => {
           <div className="popup-content" onClick={(e) => e.stopPropagation()}>
             <button className="popup-close" onClick={() => setShowLeadCapture(false)}>&times;</button>
             <h3>⚠️ Don't Risk Deregistration!</h3>
-            <p>Get your FREE compliance check now. We'll tell you exactly what filings you need and when they're due.</p>
+            <p>Get your FREE compliance check now. We&apos;ll tell you exactly what filings you need and when they&apos;re due.</p>
             <button 
               className="popup-button"
               onClick={() => {
-                openWhatsApp("🆓 I want my FREE compliance check! Please tell me what filings I need and when they're due.");
+                openWhatsApp("🆓 I want my FREE compliance check! Please tell me what filings I need and when they&apos;re due.");
                 setShowLeadCapture(false);
               }}
             >
@@ -334,7 +334,7 @@ const LandingPage: React.FC = () => {
         <div className="popup-overlay" onClick={() => setShowExitIntent(false)}>
           <div className="popup-content exit-intent" onClick={(e) => e.stopPropagation()}>
             <button className="popup-close" onClick={() => setShowExitIntent(false)}>&times;</button>
-            <h2>⚠️ Wait! Don't Leave!</h2>
+            <h2>⚠️ Wait! Don&apos;t Leave!</h2>
             <h3 className="exit-intent-offer-title">Special Offer: 50% Off First Filing</h3>
             <p>Join 15,000+ businesses who never miss a CIPC deadline. Get your first filing for just R87.50!</p>
             <button 

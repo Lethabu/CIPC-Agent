@@ -22,7 +22,7 @@ export class ImmediateActionService {
   private readonly logger: Logger;
   private readonly eventEmitter: EventEmitter;
   private readonly redis: Redis;
-  private readonly actionHandlers = new Map<string, Function>();
+  private readonly actionHandlers = new Map<string, (payload: any, context: ActionContext) => Promise<any>>();
 
   constructor(logger: Logger, eventEmitter: EventEmitter, redis: Redis) {
     this.logger = logger;
@@ -90,7 +90,7 @@ export class ImmediateActionService {
 
   private setupDefaultHandlers() {
     // CIPC compliance check
-    this.registerHandler('cipc_compliance_check', async (payload: { regNumber: string }, context: ActionContext) => {
+    this.registerHandler('cipc_compliance_check', async (payload: { regNumber: string }, _context: ActionContext) => {
       const { regNumber } = payload;
       
       if (!regNumber || !/^\d{4}\/\d{6}\/\d{2}$/.test(regNumber)) {
@@ -115,7 +115,7 @@ export class ImmediateActionService {
     });
 
     // Payment processing
-    this.registerHandler('process_payment', async (payload: { amount: number, description: string }, context: ActionContext) => {
+    this.registerHandler('process_payment', async (payload: { amount: number, description: string }, _context: ActionContext) => {
       const { amount, description } = payload;
       
       if (!amount || amount <= 0) {
@@ -136,7 +136,7 @@ export class ImmediateActionService {
 
     // WhatsApp message handling
     this.registerHandler('whatsapp_message', async (payload: { message: string, from: string }, context: ActionContext) => {
-      const { message, from } = payload;
+      const { message } = payload;
       
       // Check for registration number pattern
       const regMatch = message.match(/(\d{4}\/\d{6}\/\d{2})/);
@@ -158,7 +158,7 @@ export class ImmediateActionService {
     });
   }
 
-  public registerHandler(actionType: string, handler: Function) {
+  public registerHandler(actionType: string, handler: (payload: any, context: ActionContext) => Promise<any>) {
     this.actionHandlers.set(actionType, handler);
     this.logger.info({ actionType }, 'Registered action handler');
   }
@@ -168,7 +168,7 @@ export class ImmediateActionService {
     return cached ? JSON.parse(cached) : null;
   }
 
-  public async getActionHistory(userId: string, limit = 10): Promise<ActionResult[]> {
+  public async getActionHistory(_userId: string, _limit = 10): Promise<ActionResult[]> {
     // Implementation would fetch from persistent storage
     return [];
   }

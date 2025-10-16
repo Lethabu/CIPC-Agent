@@ -1,5 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import BeneficialOwnershipForm from "@/components/beneficial-ownership/BeneficialOwnershipForm";
@@ -10,11 +9,12 @@ export default function BeneficialOwnership() {
   const [showForm, setShowForm] = useState(false);
   const companyId = "demo-company-123"; // This would come from route params or context
 
-  const { data: ownershipData, isLoading } = useQuery({
-    queryKey: ["/api/beneficial-ownership", companyId],
-    retry: false,
-    enabled: false // Disable auto-fetch since this endpoint doesn't exist yet
-  });
+  // Query disabled until API endpoint is implemented
+  // const { data: ownershipData, isLoading } = useQuery({
+  //   queryKey: ["/api/beneficial-ownership", companyId],
+  //   retry: false,
+  //   enabled: false
+  // });
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -51,7 +51,7 @@ export default function BeneficialOwnership() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Beneficial Ownership</h1>
           <p className="text-muted-foreground mt-2">
-            Manage your company's beneficial ownership filings and compliance status
+            Manage your company&apos;s beneficial ownership filings and compliance status
           </p>
         </div>
         <Button onClick={() => setShowForm(true)}>

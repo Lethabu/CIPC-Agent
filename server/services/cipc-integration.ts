@@ -1,5 +1,4 @@
 import { spawn } from 'child_process';
-import { promisify } from 'util';
 import { logger } from '../utils/logger';
 
 export class CIPCIntegrationService {

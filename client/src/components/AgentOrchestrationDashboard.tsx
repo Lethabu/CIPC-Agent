@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 import { Progress } from './ui/progress';
@@ -16,7 +16,7 @@ interface AgentStatus {
 }
 
 const AgentOrchestrationDashboard: React.FC = () => {
-  const [agents, setAgents] = useState<AgentStatus[]>([
+  const [agents] = useState<AgentStatus[]>([
     {
       id: 'cipc_commander',
       name: 'CIPC Commander',
@@ -71,7 +71,7 @@ const AgentOrchestrationDashboard: React.FC = () => {
     }
   ]);
 
-  const [orchestrationMetrics, setOrchestrationMetrics] = useState({
+  const [orchestrationMetrics] = useState({
     totalTasks: 217,
     successRate: 94.2,
     avgResponseTime: 1.3,

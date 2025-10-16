@@ -1,8 +1,7 @@
 import OpenAI from "openai";
 import { GoogleGenAI } from "@google/genai";
 import { CipcCommander } from "./agents/cipcCommander";
-import { leadScoutAgent } from "./agents/leadScout";
-import { kycOnboarderAgent } from "./agents/kycOnboarder";
+
 import { formAutopilotAgent, CipcSubmissionResult } from "./agents/formAutopilot";
 import { regulationSentinelAgent } from "./agents/regulationSentinel";
 import { paymentRunnerAgent } from "./agents/paymentRunner";

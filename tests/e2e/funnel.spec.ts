@@ -1,5 +1,4 @@
 import { test, expect } from '@playwright/test';
-import { chromium } from 'playwright';
 
 test.describe('CIPC Agent E2E Funnel Tests', () => {
   test.beforeEach(async ({ page }) => {

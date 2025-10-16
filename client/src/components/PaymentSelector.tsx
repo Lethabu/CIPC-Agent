@@ -46,7 +46,7 @@ const PaymentSelector: React.FC<PaymentSelectorProps> = ({ amount, service, onPa
       } else {
         alert(result.error || 'Payment initialization failed');
       }
-    } catch (error) {
+    } catch {
       alert('Payment error. Please try again.');
     } finally {
       setLoading(false);

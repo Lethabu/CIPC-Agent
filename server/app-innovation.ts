@@ -5,7 +5,6 @@ import { config } from './config';
 import { createApiRouter } from './api/router';
 import { TypebotOrchestrator } from './services/typebot-orchestrator';
 import { WhatsAppInnovationBridge } from './services/whatsapp-innovation-bridge';
-import { AIOrchestrator } from './services/ai-orchestrator';
 import { RealtimeAnalytics } from './services/realtime-analytics';
 import { InnovationMonitor } from './services/innovation-monitor';
 

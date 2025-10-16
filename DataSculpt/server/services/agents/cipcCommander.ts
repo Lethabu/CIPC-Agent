@@ -44,7 +44,7 @@ export class CipcCommander {
         priority: result.priority || "medium",
         data: { ...result.data, ...userData }
       };
-    } catch (error) {
+    } catch {
       // Fallback routing
       return {
         agentName: "cipc_commander",

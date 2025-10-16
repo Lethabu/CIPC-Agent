@@ -8,7 +8,7 @@ export default function Agents() {
       icon: "search",
       color: "sa-orange",
       features: ["LinkedIn SMME discovery", "Free compliance scoring", "Automated outreach"],
-      viralHook: "🎯 Free \"CIPC Health Check\" Report"
+      viralHook: "🎯 Free &quot;CIPC Health Check&quot; Report"
     },
     {
       name: "KYC Onboarder", 

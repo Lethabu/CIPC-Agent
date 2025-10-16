@@ -229,7 +229,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/beneficial-ownership/submit', async (req: Request, res: Response) => {
     try {
-      const { filingId, formData } = req.body;
+      const { formData } = req.body;
       
       // Submit form via Form Autopilot agent
       const submissionResult = await aiOrchestrator.routeTask('submit_cipc_form', {

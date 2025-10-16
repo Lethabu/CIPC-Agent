@@ -1,25 +1,14 @@
 {
   "compilerOptions": {
+    "target": "ES2020",
     "module": "commonjs",
-    "moduleResolution": "node",
-    "target": "ESNext",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
     "outDir": "./dist",
-    "baseUrl": ".",
-    "paths": {
-      "@shared/*": ["../shared/*"]
-    },
-    "typeRoots": ["./types", "../node_modules/@types"],
-    "types": ["jest", "node"],
-    "resolveJsonModule": true
+    "rootDir": "./",
+    "strict": false,
+    "esModuleInterop": true,
+    "skipLibCheck": true
   },
-  "ts-node": {
-    "esm": true,
-    "transpileOnly": true
-  },
-  "include": ["**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "app.ts"
+  ]
 }

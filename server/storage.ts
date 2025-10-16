@@ -11,7 +11,6 @@ import { eq } from "drizzle-orm";
 import { z } from "zod";
 
 type InsertUser = z.infer<typeof insertUserSchema>;
-type Json = any;
 
 // Interface for storage operations
 export interface IStorage {

@@ -2,7 +2,6 @@ import { Request, Response, NextFunction } from 'express';
 import { auth } from '../../services/firebase';
 import { sendEmail } from '../../services/email';
 import { config } from '../../config';
-import { DecodedIdToken } from 'firebase-admin/auth';
 
 export const authMiddleware = async (
   req: Request,

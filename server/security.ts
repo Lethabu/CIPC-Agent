@@ -1,6 +1,5 @@
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
-import { Request, Response, NextFunction } from 'express';
 
 // 1. Rate Limiting
 // General API limiter for all incoming requests

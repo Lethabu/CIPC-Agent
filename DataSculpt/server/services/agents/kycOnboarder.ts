@@ -3,7 +3,7 @@ export class KYCOnboarderAgent {
   name = "KYC Onboarder";
   description = "AI agent specialized in customer verification and POPIA-compliant onboarding for CIPC services";
 
-  async verifyCustomer(customerData: {
+  async verifyCustomer(_customerData: {
     idNumber?: string;
     companyName?: string;
     registrationNumber?: string;

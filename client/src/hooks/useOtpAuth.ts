@@ -30,7 +30,7 @@ export const useOtpAuth = () => {
       } else {
         setState({ loading: false, error: data.error, success: false });
       }
-    } catch (error) {
+    } catch {
       setState({ loading: false, error: 'Network error', success: false });
     }
   };
@@ -54,7 +54,7 @@ export const useOtpAuth = () => {
         setState({ loading: false, error: data.error, success: false });
         return false;
       }
-    } catch (error) {
+    } catch {
       setState({ loading: false, error: 'Network error', success: false });
       return false;
     }

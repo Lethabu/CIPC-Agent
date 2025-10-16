@@ -3,7 +3,7 @@ export class LeadScoutAgent {
   name = "Lead Scout";
   description = "AI agent specialized in identifying and qualifying South African SMME leads for CIPC compliance services";
 
-  async identifyLeads(criteria: {
+  async identifyLeads(_criteria: {
     industry?: string;
     region?: string;
     companySize?: string;
@@ -30,7 +30,7 @@ export class LeadScoutAgent {
     };
   }
 
-  async qualifyLead(companyData: any) {
+  async qualifyLead(_companyData: any) {
     return {
       qualified: true,
       score: 85,

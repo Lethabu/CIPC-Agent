@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import PricingCard from "@/components/ui/pricing-card";
 
 export default function Pricing() {

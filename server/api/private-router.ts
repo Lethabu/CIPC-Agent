@@ -2,7 +2,7 @@ import express from 'express';
 import { TypebotOrchestrator } from '../services/typebot-orchestrator';
 import { AppConfig } from '../config';
 
-export const createPrivateRouter = (orchestrator: TypebotOrchestrator, config: AppConfig) => {
+export const createPrivateRouter = (_orchestrator: TypebotOrchestrator, _config: AppConfig) => {
   const router = express.Router();
 
   // This is a protected route, accessible only to authenticated users.
