@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "buildCommand": "cd client && npm install && npm run build",
+  "installCommand": "npm install",
+  "outputDirectory": "client/dist",
+  "framework": "vite",
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ],
+  "functions": {
+    "api/**/*.ts": {
+      "runtime": "@vercel/node"
+    }
+  }
+}
