@@ -10,9 +10,6 @@ export default defineConfig({
     },
   },
   build: {
-    rollupOptions: {
-      external: ['@typebot.io/react']
-    },
     outDir: 'dist'
   },
   envPrefix: 'REACT_APP_'
