@@ -39,3 +39,11 @@ Thumbs.db
 tmp/
 temp/
 .vercel
+.vercel/.env.preview.local
+.vercel/project.json
+.vercel/README.txt
+.vercel/output/builds.json
+.vercel/output/config.json
+.vercel/output/diagnostics/cli_traces.json
+
+.vercel
