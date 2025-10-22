@@ -2,9 +2,7 @@ import { Router, Request, Response } from 'express';
 import { db } from './db'; // Assuming you have a db export
 import { users } from '../shared/schema';
 import { eq } from 'drizzle-orm';
-import pino from 'pino';
-
-const logger = pino({ level: 'info' });
+import logger from './logger';
 const router = Router();
 
 interface AisensyWebhookPayload {

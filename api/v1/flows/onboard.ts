@@ -153,14 +153,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       companyRegNumber: companyRegistrationNumber,
       phoneNumber: whatsappNumber,
       consentGiven: true,
-      consentDate: new Date(),
-      metadata: {
-        conversationId,
-        complianceScore: complianceResult.riskScore,
-        threatAnalysis: threatAnalysis.threatLevel,
-        southAfricanIdValidated: !!saIdValidation?.success,
-        enterpriseProcessed: true
-      }
+      consentDate: new Date()
     }).returning();
 
     // Step 5: Record successful compliance metrics
@@ -176,6 +169,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       channel: 'whatsapp',
       complianceType: 'onboarding',
       result: 'completed',
+      conversationStartTime: Date.now(),
       durationSeconds: 0, // Calculate actual duration from start
       interactionsCount: 1,
       complianceViolations: 0
@@ -222,8 +216,7 @@ Reference: ${newUser[0].id}`;
       context: {
         timestamp: new Date(),
         step: 'error_handling',
-        userInput: JSON.stringify(req.body),
-        endpoint: '/api/v1/flows/onboard'
+        userInput: JSON.stringify(req.body)
       },
       severity: 'high'
     });

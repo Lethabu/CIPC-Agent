@@ -342,7 +342,7 @@ process.on('unhandledRejection', (reason, promise) => {
   conversationalErrorLogger.logConversationalError({
     conversationId: 'system-error',
     userId: 'system',
-    channel: 'system',
+    channel: 'webchat',
     error: new Error(`Unhandled Rejection: ${reason}`),
     context: {
       timestamp: new Date(),
@@ -356,11 +356,11 @@ process.on('uncaughtException', (error) => {
   conversationalErrorLogger.logConversationalError({
     conversationId: 'system-error',
     userId: 'system',
-    channel: 'system',
+    channel: 'webchat',
     error,
     context: {
       timestamp: new Date(),
-      source: 'uncaughtException'
+      userInput: 'system_error'
     },
     severity: 'critical'
   });
