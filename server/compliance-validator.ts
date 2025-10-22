@@ -12,7 +12,7 @@ interface ComplianceValidationResult {
 }
 
 interface ComplianceViolation {
-  regulation: 'POPIA' | 'Companies Act' | 'CIPC Regulations' | 'ECTA' | 'CPA';
+  regulation: 'POPIA' | 'Companies Act' | 'CIPC Regulations' | 'ECTA' | 'CPA' | 'Identification Act';
   section: string;
   description: string;
   severity: 'low' | 'medium' | 'high' | 'critical';
@@ -71,6 +71,12 @@ export class ComplianceValidator extends EventEmitter {
     action: 'data_collection' | 'data_processing' | 'data_deletion' | 'data_sharing',
     context: ComplianceContext
   ): Promise<ComplianceValidationResult> {
+    // Ensure context has required fields with defaults
+    const safeContext = {
+      ...context,
+      dataTypes: context.dataTypes || [],
+      purpose: context.purpose || 'Not specified'
+    };
     try {
       const violations: ComplianceViolation[] = [];
 
@@ -117,6 +123,7 @@ export class ComplianceValidator extends EventEmitter {
         nextReviewDate: this.calculateNextReviewDate(violations)
       };
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
       console.error('Compliance validation error:', error);
       // In case of validation failure, assume non-compliant to be safe
       return {
@@ -126,7 +133,7 @@ export class ComplianceValidator extends EventEmitter {
           section: 'General',
           description: 'Compliance validation system error - manual review required',
           severity: 'high',
-          evidence: [`Validation error: ${error.message}`],
+          evidence: [`Validation error: ${errorMessage}`],
           remediationSteps: ['Manual compliance review', 'System error investigation'],
           deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
         }],
@@ -147,7 +154,7 @@ export class ComplianceValidator extends EventEmitter {
     ];
 
     if (!context.purpose || !lawfulPurposes.some(purpose =>
-      context.purpose.toLowerCase().includes(purpose.replace('_', ' '))
+      context.purpose!.toLowerCase().includes(purpose.replace('_', ' '))
     )) {
       violations.push({
         regulation: 'POPIA',
@@ -190,12 +197,13 @@ export class ComplianceValidator extends EventEmitter {
       try {
         SouthAfricanIdSchema.parse(context.southAfricanId);
       } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
         violations.push({
           regulation: 'Identification Act',
           section: 'General',
           description: 'Invalid South African ID number provided',
           severity: 'medium',
-          evidence: [`ID provided: ${context.southAfricanId}`, `Validation error: ${error.message}`],
+          evidence: [`ID provided: ${context.southAfricanId}`, `Validation error: ${errorMessage}`],
           remediationSteps: [
             'Validate ID format and checksum',
             'Request corrected ID from data subject',
@@ -254,7 +262,7 @@ export class ComplianceValidator extends EventEmitter {
   private async validateDataRetention(context: ComplianceContext): Promise<ComplianceViolation[]> {
     const violations: ComplianceViolation[] = [];
 
-    const maxRetentionPeriods = {
+    const maxRetentionPeriods: Record<string, number> = {
       'tax_records': 7 * 365, // 7 years
       'company_registration': 10 * 365, // 10 years (legal requirement)
       'financial_records': 7 * 365, // 7 years
@@ -289,7 +297,7 @@ export class ComplianceValidator extends EventEmitter {
     return violations;
   }
 
-  private async validateDataSubjectRights(_context?: ComplianceContext): Promise<ComplianceViolation[]> {
+  private async validateDataSubjectRights(): Promise<ComplianceViolation[]> {
     // This would validate that data subject rights mechanisms are in place
     // Implementation depends on your specific interface design
     return [];
@@ -473,9 +481,10 @@ export class ComplianceValidator extends EventEmitter {
       try {
         SouthAfricanIdSchema.parse(southAfricanId);
       } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Invalid South African ID';
         return {
           success: false,
-          message: 'Invalid South African ID provided',
+          message: `Invalid South African ID provided: ${errorMessage}`,
           requestId: null,
           estimatedCompletionDate: null,
           requiresVerification: true

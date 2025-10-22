@@ -15,6 +15,7 @@ interface ConversationalError {
     complianceType?: string;
     timestamp: Date;
     sessionData?: any;
+    [key: string]: any; // Allow additional context properties
   };
   severity: 'low' | 'medium' | 'high' | 'critical';
 }
@@ -27,8 +28,8 @@ interface ComplianceError extends ConversationalError {
 }
 
 export class ConversationalErrorLogger extends EventEmitter {
-  private logger: winston.Logger;
-  private metrics: {
+  private logger!: winston.Logger;
+  private metrics!: {
     errorCount: promClient.Counter<string>;
     errorSeverity: promClient.Gauge<string>;
     complianceErrorRate: promClient.Gauge<string>;
@@ -126,7 +127,7 @@ export class ConversationalErrorLogger extends EventEmitter {
         .set(this.calculateSeverityScore(enrichedError.severity));
 
       // Handle compliance-specific errors
-      if (enrichedError.compliance?.breachRisk > 0.5) {
+      if (enrichedError.compliance?.breachRisk && enrichedError.compliance.breachRisk > 0.5) {
         await this.handleComplianceError(enrichedError as ComplianceError);
       }
 
@@ -310,7 +311,7 @@ export class ConversationalErrorLogger extends EventEmitter {
     console.log('Triggering compliance workflow for high-risk error:', auditEntry.errorId);
   }
 
-  private async getRecentErrors(count: number): Promise<any[]> {
+  private async getRecentErrors(_count: number): Promise<any[]> {
     // In a real implementation, this would query a database or cache
     // For now, return an empty array as this is a simplified implementation
     return [];
@@ -346,7 +347,7 @@ process.on('unhandledRejection', (reason, promise) => {
     error: new Error(`Unhandled Rejection: ${reason}`),
     context: {
       timestamp: new Date(),
-      promise: promise.toString()
+      promise: String(promise)
     },
     severity: 'high'
   });
