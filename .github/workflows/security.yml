@@ -29,13 +29,44 @@ jobs:
         with:
           path: ./
           
-  deploy:
+  build-client:
     needs: security-scan
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
-      
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Build client
+        run: |
+          cd client
+          npm install
+          npm run build
+
+      - name: Upload client build
+        uses: actions/upload-artifact@v4
+        with:
+          name: client-build
+          path: client/dist/
+
+  deploy:
+    needs: [build-client]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download client build
+        uses: actions/download-artifact@v4
+        with:
+          name: client-build
+          path: client/dist/
+
       - name: Deploy to Vercel
         uses: amondnet/vercel-action@v25
         with:
